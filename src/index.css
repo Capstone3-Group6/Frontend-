@@ -56,6 +56,124 @@ body {
   margin: 0;
 }
 
+/* ─── Moodie design tokens ─────────────────────────── */
+:root {
+  --cream:        #FAF8F5;
+  --cream-card:   #FFFFFF;
+  --warm-border:  #EDE8E0;
+  --moodie-body:  #C4B5FD;
+  --moodie-dark:  #A78BFA;
+  --moodie-deep:  #7C3AED;
+  --moodie-peach: #FDBA74;
+  --moodie-pink:  #FCA5A5;
+  --warm-text:    #3D2C1E;
+  --muted-text:   #9C8B7A;
+  --pill-bg:      #F5F0FF;
+}
+
+/* ─── Moodie keyframe animations ───────────────────── */
+@keyframes moodie-wave {
+  0%, 100% { transform: rotate(-15deg); }
+  40%       { transform: rotate(30deg); }
+  70%       { transform: rotate(-5deg); }
+}
+
+@keyframes moodie-bounce {
+  0%, 100% { transform: translateY(0px); }
+  50%       { transform: translateY(-5px); }
+}
+
+@keyframes moodie-loading-pulse {
+  0%, 100% { filter: drop-shadow(0 0 6px rgba(167,139,250,0.3)); }
+  50%       { filter: drop-shadow(0 0 22px rgba(167,139,250,0.85)); }
+}
+
+@keyframes loading-dot {
+  0%, 80%, 100% { transform: translateY(0);   opacity: 0.4; }
+  40%           { transform: translateY(-8px); opacity: 1;   }
+}
+
+@keyframes marquee-scroll {
+  0%   { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+@keyframes modal-slide-up {
+  from { opacity: 0; transform: translateY(16px) scale(0.97); }
+  to   { opacity: 1; transform: translateY(0)     scale(1);    }
+}
+
+@keyframes card-pop-in {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0);   }
+}
+
+@keyframes bubble-pop {
+  from { opacity: 0; transform: scale(0.85) translateY(4px); }
+  to   { opacity: 1; transform: scale(1)    translateY(0);   }
+}
+
+/* ─── Moodie animation classes ─────────────────────── */
+.moodie-wave-arm {
+  animation: moodie-wave 0.9s ease-in-out infinite;
+  transform-box: fill-box;
+  transform-origin: 0% 50%;
+}
+
+.moodie-bounce {
+  animation: moodie-bounce 2.2s ease-in-out infinite;
+}
+
+.moodie-loading {
+  animation: moodie-bounce 0.9s ease-in-out infinite,
+             moodie-loading-pulse 1.4s ease-in-out infinite;
+}
+
+.marquee-track {
+  display: flex;
+  gap: 14px;
+  white-space: nowrap;
+  animation: marquee-scroll 14s linear infinite;
+  will-change: transform;
+}
+
+.modal-enter  { animation: modal-slide-up 0.28s cubic-bezier(0.16,1,0.3,1); }
+.card-enter   { animation: card-pop-in   0.22s ease-out; }
+.bubble-enter { animation: bubble-pop    0.18s ease-out; }
+
+/* typewriter-effect library styles */
+.moodie-tw-wrapper {
+  color: #B0A090;
+  font-size: 14px;
+  font-family: inherit;
+}
+.moodie-tw-cursor {
+  color: #C4B5FD;
+  font-weight: 300;
+  animation: typewriter-blink 0.8s step-end infinite;
+}
+@keyframes typewriter-blink {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0; }
+}
+
+
+/* Orbital loading dots */
+@keyframes orbit-1 {
+  from { transform: rotate(0deg)   translateX(42px); }
+  to   { transform: rotate(360deg) translateX(42px); }
+}
+@keyframes orbit-2 {
+  from { transform: rotate(120deg) translateX(42px); }
+  to   { transform: rotate(480deg) translateX(42px); }
+}
+@keyframes orbit-3 {
+  from { transform: rotate(240deg) translateX(42px); }
+  to   { transform: rotate(600deg) translateX(42px); }
+}
+
+
+
 #root {
   width: 1126px;
   max-width: 100%;

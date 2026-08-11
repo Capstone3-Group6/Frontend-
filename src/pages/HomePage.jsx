@@ -1,3 +1,5 @@
+import MoodMap from '../components/MoodMap';
+
 const moods = [
   { name: "Calm", type: "calm" },
   { name: "Creative", type: "creative" },
@@ -211,8 +213,8 @@ function MoodFace({ type, className = "h-8 w-8", accent = "#161616" }) {
 
 function SearchControls() {
   return (
-    <div className="flex items-center gap-2">
-      <label className="group flex h-11 w-[min(68vw,390px)] items-center rounded-full border border-[#D9D4CE] bg-[#FFFDFC] px-3 shadow-[0_12px_30px_rgba(22,22,22,0.06)] transition duration-200 focus-within:border-[#B4232C] focus-within:ring-4 focus-within:ring-[#F5DADB]">
+    <div className="flex h-11 items-center gap-2">
+      <label className="group flex h-11 w-[min(68vw,390px)] items-center rounded-full border border-[rgba(22,22,22,0.08)] bg-[#FFFDFC] px-3 shadow-[0_8px_22px_rgba(22,22,22,0.05)] transition duration-200 focus-within:border-[rgba(180,35,44,0.35)] focus-within:ring-4 focus-within:ring-[rgba(180,35,44,0.10)]">
         <span className="mr-2 flex h-8 w-8 items-center justify-center rounded-full bg-[#F7F3EE] text-[#161616] transition group-focus-within:text-[#B4232C]">
           <SearchIcon />
         </span>
@@ -223,7 +225,7 @@ function SearchControls() {
         />
       </label>
       <button
-        className="group relative flex h-11 w-11 cursor-pointer items-center justify-center rounded-full border border-[#D9D4CE] bg-[#FFFDFC] text-[#161616] shadow-[0_12px_30px_rgba(22,22,22,0.06)] transition-[transform,box-shadow,color,background-color,border-color] duration-200 ease-out hover:-translate-y-0.5 hover:scale-110 hover:border-[#B4232C] hover:bg-[#F5DADB] hover:text-[#7D1820] hover:shadow-[0_14px_30px_rgba(22,22,22,0.12)]"
+        className="group relative flex h-11 w-11 cursor-pointer items-center justify-center rounded-full border border-[rgba(22,22,22,0.08)] bg-[#FFFDFC] text-[#161616] shadow-[0_8px_22px_rgba(22,22,22,0.05)] transition-[transform,box-shadow,color,background-color,border-color] duration-200 ease-out hover:-translate-y-0.5 hover:scale-110 hover:border-[rgba(180,35,44,0.35)] hover:bg-[rgba(180,35,44,0.08)] hover:text-[#B4232C] hover:shadow-[0_12px_26px_rgba(180,35,44,0.12)]"
         aria-label="Filter"
       >
         <FilterIcon />
@@ -239,20 +241,20 @@ function MoodCarousel() {
   const loop = [...moods, ...moods];
 
   return (
-    <div className="mood-carousel group relative h-20 max-w-full overflow-hidden [mask-image:linear-gradient(90deg,transparent,black_7%,black_93%,transparent)]">
-      <div className="mood-track flex w-max items-start gap-8 py-2">
+    <div className="mood-carousel group relative flex h-16 max-w-full items-start overflow-hidden rounded-2xl border border-[rgba(22,22,22,0.07)] bg-white/55 px-3 pt-1 shadow-[0_4px_16px_rgba(22,22,22,0.04)] [mask-image:linear-gradient(90deg,transparent,black_7%,black_93%,transparent)]">
+      <div className="mood-track flex w-max items-start gap-9">
         {loop.map((mood, index) => (
           <div
             key={`${mood.name}-${index}`}
-            className="group/item relative flex h-14 w-10 shrink-0 justify-center"
+            className="group/item mood-float relative flex h-10 w-10 shrink-0 items-center justify-center"
           >
             <button
-              className="flex h-10 w-10 cursor-pointer items-center justify-center rounded-full bg-[#FFFDFC]/78 text-[#161616] shadow-[0_8px_20px_rgba(22,22,22,0.08)] ring-1 ring-[#D9D4CE] transition-[transform,box-shadow,color,background-color] duration-200 ease-out group-hover/item:-translate-y-[3px] group-hover/item:scale-110 group-hover/item:bg-[#F5DADB] group-hover/item:text-[#7D1820] group-hover/item:shadow-[0_14px_30px_rgba(22,22,22,0.14)]"
+              className="flex h-9 w-9 cursor-pointer items-center justify-center rounded-full bg-[#FFFDFC]/80 text-[#161616] shadow-[0_6px_16px_rgba(22,22,22,0.07)] ring-1 ring-[#DDD7D2] transition-[transform,box-shadow,color,background-color] duration-200 ease-out group-hover/item:-translate-y-0.5 group-hover/item:scale-110 group-hover/item:bg-[rgba(180,35,44,0.08)] group-hover/item:text-[#B4232C] group-hover/item:shadow-[0_12px_26px_rgba(180,35,44,0.12)]"
               aria-label={mood.name}
             >
-              <MoodFace type={mood.type} className="h-7 w-7" />
+              <MoodFace type={mood.type} className="h-6 w-6" />
             </button>
-            <span className="pointer-events-none absolute left-1/2 top-11 z-50 -translate-x-1/2 translate-y-1 whitespace-nowrap rounded-md bg-[#161616] px-2 py-1 text-xs font-bold text-[#FFFDFC] opacity-0 shadow-lg transition-all duration-200 group-hover/item:translate-y-0 group-hover/item:opacity-100">
+            <span className="pointer-events-none absolute left-1/2 top-10 z-50 -translate-x-1/2 translate-y-1 whitespace-nowrap rounded-md bg-[#161616] px-2 py-1 text-xs font-bold text-[#FFFDFC] opacity-0 shadow-lg transition-all duration-200 group-hover/item:translate-y-0 group-hover/item:opacity-100">
               {mood.name}
             </span>
           </div>
@@ -344,7 +346,7 @@ function HoverPreview({ place }) {
 
 function MoodMarker({ place }) {
   return (
-    <div className={`group mood-marker absolute ${place.position}`}>
+    <div className={`group mood-marker pointer-events-auto absolute ${place.position}`}>
       <button
         className={`relative flex cursor-pointer items-center justify-center rounded-[18px_18px_18px_6px] ${accents[place.accent].marker} shadow-[0_14px_30px_rgba(22,22,22,0.22)] ring-[3px] ring-[#FFFDFC] transition-[transform,box-shadow] duration-200 ease-out hover:-translate-y-0.5 hover:scale-110 hover:shadow-[0_20px_42px_rgba(22,22,22,0.28)] ${place.selected ? "h-12 w-12 shadow-[0_0_0_8px_rgba(180,35,44,0.10),0_18px_42px_rgba(22,22,22,0.28)] ring-4 ring-[#F7F3EE]" : "h-11 w-11"}`}
         aria-label={`${place.name}, ${place.mood}`}
@@ -393,11 +395,8 @@ function SelectedPlaceCard({ place }) {
 function MapPanel() {
   return (
     <div className="relative min-h-[520px] overflow-hidden rounded-[26px] border border-[#D9D4CE] bg-[#EDE7DF] shadow-[0_24px_58px_rgba(22,22,22,0.14)] lg:h-full lg:min-h-0">
-      <div className="absolute inset-0 bg-[#EDE7DF]" />
-      <div className="absolute inset-0 opacity-85 [background-image:linear-gradient(118deg,transparent_0_38%,rgba(255,253,252,0.78)_38%_40%,transparent_40%_100%),linear-gradient(25deg,transparent_0_47%,rgba(255,253,252,0.72)_47%_49%,transparent_49%_100%),linear-gradient(90deg,transparent_0_59%,rgba(255,253,252,0.65)_59%_61%,transparent_61%_100%)] [background-size:260px_170px,340px_220px,230px_170px]" />
-      <div className="absolute left-[8%] top-[20%] h-20 w-[58%] rotate-[-8deg] rounded-full border-y-[16px] border-[#D9D4CE]/70" />
-      <div className="absolute bottom-[14%] right-[9%] h-24 w-[48%] rotate-[16deg] rounded-full border-y-[18px] border-[#E4D6CC]/80" />
-      <div className="absolute inset-0 opacity-35 [background-image:linear-gradient(rgba(22,22,22,0.08)_1px,transparent_1px),linear-gradient(90deg,rgba(22,22,22,0.08)_1px,transparent_1px)] [background-size:62px_62px]" />
+      <MoodMap />
+      <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(180deg,rgba(247,243,238,0.18),transparent_30%,rgba(22,22,22,0.08))]" />
 
       <div className="absolute left-4 top-4 z-10 rounded-full border border-[#D9D4CE] bg-[#FFFDFC]/92 px-3 py-2 shadow-[0_12px_28px_rgba(22,22,22,0.10)] backdrop-blur">
         <p className="text-xs font-black text-[#161616]">New York City, NY</p>
@@ -412,7 +411,7 @@ function MapPanel() {
         </span>
       </button>
 
-      <div className="absolute inset-0">
+      <div className="pointer-events-none absolute inset-0">
         {places.map((place) => (
           <MoodMarker key={place.name} place={place} />
         ))}
@@ -426,7 +425,7 @@ function MapPanel() {
 export default function HomePage() {
   return (
     <section className="mx-auto flex w-full max-w-[1500px] flex-col px-4 pb-4 pt-3 sm:px-6 lg:h-[calc(100vh-64px)] lg:min-h-[640px] lg:overflow-hidden">
-      <div className="mb-3 grid gap-3 lg:grid-cols-[auto_minmax(0,1fr)] lg:items-center">
+      <div className="mb-3 grid gap-2 lg:grid-cols-[auto_minmax(0,1fr)] lg:items-center">
         <SearchControls />
         <MoodCarousel />
       </div>

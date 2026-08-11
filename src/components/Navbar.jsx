@@ -26,7 +26,7 @@ function MoodLogo() {
 }
 
 function Icon({ name }) {
-  const base = "h-5 w-5";
+  const base = "h-6 w-6";
   const paths = {
     explore: (
       <>
@@ -95,7 +95,7 @@ function NavItem({ to, icon, label, end = false }) {
           `flex h-10 w-10 cursor-pointer items-center justify-center rounded-full transition-[transform,box-shadow,color,background-color] duration-200 ease-out group-hover:-translate-y-0.5 group-hover:scale-110 ${
             isActive
               ? "bg-[#B4232C] text-white shadow-[0_10px_24px_rgba(180,35,44,0.22)] group-hover:shadow-[0_14px_30px_rgba(180,35,44,0.28)]"
-              : "text-[#161616] group-hover:bg-[#F5DADB] group-hover:text-[#7D1820] group-hover:shadow-[0_10px_24px_rgba(22,22,22,0.10)]"
+              : "text-[#161616] group-hover:bg-[rgba(180,35,44,0.08)] group-hover:text-[#B4232C] group-hover:shadow-[0_10px_24px_rgba(180,35,44,0.12)]"
           }`
         }
       >
@@ -115,7 +115,7 @@ function IconButton({ icon, label, onClick }) {
         type="button"
         onClick={onClick}
         aria-label={label}
-        className="flex h-10 w-10 cursor-pointer items-center justify-center rounded-full text-[#161616] transition-[transform,box-shadow,color,background-color] duration-200 ease-out group-hover:-translate-y-0.5 group-hover:scale-110 group-hover:bg-[#F5DADB] group-hover:text-[#7D1820] group-hover:shadow-[0_10px_24px_rgba(22,22,22,0.10)]"
+        className="flex h-10 w-10 cursor-pointer items-center justify-center rounded-full text-[#161616] transition-[transform,box-shadow,color,background-color] duration-200 ease-out group-hover:-translate-y-0.5 group-hover:scale-110 group-hover:bg-[rgba(180,35,44,0.08)] group-hover:text-[#B4232C] group-hover:shadow-[0_10px_24px_rgba(180,35,44,0.12)]"
       >
         <Icon name={icon} />
       </button>
@@ -128,8 +128,8 @@ function IconButton({ icon, label, onClick }) {
 
 export default function Navbar({ user, onLogout }) {
   return (
-    <header className="sticky top-0 z-50 border-b border-[#D9D4CE]/25 bg-[#F7F3EE]/64 backdrop-blur-xl transition-all duration-200 hover:border-[#D9D4CE]/70 hover:bg-[#FFFDFC]/88">
-      <nav className="mx-auto flex h-16 w-full max-w-[1500px] items-center gap-3 px-4 sm:px-6">
+    <header className="sticky top-0 z-50 border-b border-[rgba(22,22,22,0.06)] bg-[rgba(255,253,250,0.78)] backdrop-blur-[14px] transition-all duration-200 hover:bg-[rgba(255,253,250,0.9)]">
+      <nav className="mx-auto flex h-16 w-full max-w-[1500px] items-center gap-4 px-4 sm:px-6">
         <NavLink to="/" className="mr-auto flex items-center gap-3" aria-label="Mood Map home">
           <MoodLogo />
           <p className="text-lg font-black tracking-[-0.035em] text-[#161616]">
@@ -137,7 +137,7 @@ export default function Navbar({ user, onLogout }) {
           </p>
         </NavLink>
 
-        <div className="flex items-center gap-5 sm:gap-6">
+        <div className="flex items-center gap-6 sm:gap-7">
           <NavItem to="/" end icon="explore" label="Explore" />
           <NavItem to="/saved" icon="saved" label="Saved" />
           <NavItem to="/create" icon="add" label="Add Mood" />

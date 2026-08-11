@@ -1,5 +1,5 @@
 @import 'tailwindcss';
-
+@custom-variant hover (&:hover);
 :root {
   --text: #6f6a66;
   --text-h: #161616;
@@ -55,15 +55,15 @@ body {
   background:
     radial-gradient(
       circle at 12% 8%,
-      rgba(180, 35, 44, 0.055),
+      rgba(180, 35, 44, 0.04),
       transparent 26%
     ),
     radial-gradient(
       circle at 92% 10%,
-      rgba(125, 24, 32, 0.04),
+      rgba(125, 24, 32, 0.03),
       transparent 24%
     ),
-    linear-gradient(180deg, #fffdfc 0%, #f7f3ee 54%, #f2ede6 100%);
+    linear-gradient(135deg, #fffdfc 0%, #f7f3ee 55%, #f1e8e3 100%);
 }
 
 button,
@@ -115,11 +115,22 @@ a {
 
 @keyframes mood-marquee {
   from {
-    transform: translateX(-50%);
+    transform: translate3d(-50%, 0, 0);
   }
 
   to {
-    transform: translateX(0);
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+@keyframes mood-idle-float {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0);
+  }
+
+  50% {
+    transform: translate3d(0, -1px, 0);
   }
 }
 
@@ -135,10 +146,27 @@ a {
 }
 
 .mood-track {
-  animation: mood-marquee 36s linear infinite;
+  animation: mood-marquee 40s linear infinite;
+  will-change: transform;
 }
 
 .mood-carousel:hover .mood-track {
+  animation-play-state: paused;
+}
+
+.mood-float {
+  animation: mood-idle-float 4.6s ease-in-out infinite;
+}
+
+.mood-float:nth-child(2n) {
+  animation-delay: -1.4s;
+}
+
+.mood-float:nth-child(3n) {
+  animation-delay: -2.6s;
+}
+
+.mood-carousel:hover .mood-float {
   animation-play-state: paused;
 }
 
@@ -164,4 +192,219 @@ a {
 
 .mood-marker:hover {
   animation-play-state: paused;
+}
+
+.mood-marker-wrapper {
+  background: transparent;
+  border: none;
+}
+
+/*
+  Leaflet adds a wrapper around our custom marker.
+  We remove its default background and border.
+*/
+
+
+.mood-marker {
+  position: relative;
+
+  width: 48px;
+  height: 48px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 50% 50% 50% 12px;
+
+  transform: rotate(-45deg);
+
+  background: #b4232c;
+
+  border: 4px solid #fffdf8;
+
+  box-shadow:
+    0 8px 20px rgba(22, 22, 22, 0.22),
+    0 2px 5px rgba(22, 22, 22, 0.16);
+
+  transition:
+    transform 200ms ease,
+    box-shadow 200ms ease;
+}
+
+/*
+  This creates the location-pin shape.
+
+  width / height
+  = size of marker.
+
+  border-radius
+  = creates the rounded pin shape.
+
+  rotate(-45deg)
+  = rotates the square into the familiar map-pin shape.
+
+  background
+  = our rich red Mood Map color.
+
+  border
+  = warm white border.
+
+  shadow
+  = gives depth.
+*/
+
+
+.mood-marker:hover {
+  transform: rotate(-45deg) scale(1.1);
+
+  box-shadow:
+    0 12px 28px rgba(22, 22, 22, 0.28),
+    0 4px 8px rgba(22, 22, 22, 0.18);
+}
+
+/*
+  When the user hovers over the marker:
+
+  scale(1.1)
+  = marker becomes about 10% bigger.
+
+  stronger shadow
+  = marker feels lifted from the map.
+*/
+
+
+.mood-face {
+  position: relative;
+
+  width: 30px;
+  height: 30px;
+
+  border-radius: 50%;
+
+  background: #fffdf8;
+
+  transform: rotate(45deg);
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/*
+  The whole map pin is rotated -45 degrees.
+
+  So we rotate the face +45 degrees
+  to make the face straight again.
+*/
+
+
+.mood-eye {
+  position: absolute;
+
+  top: 9px;
+
+  width: 4px;
+  height: 4px;
+
+  border-radius: 50%;
+
+  background: #161616;
+}
+
+/*
+  Creates the two eyes.
+*/
+
+
+.mood-eye:first-child {
+  left: 7px;
+}
+
+/*
+  Positions the left eye.
+*/
+
+
+.mood-eye:nth-child(2) {
+  right: 7px;
+}
+
+/*
+  Positions the right eye.
+*/
+
+
+.mood-smile {
+  position: absolute;
+
+  left: 8px;
+  bottom: 6px;
+
+  width: 14px;
+  height: 7px;
+
+  border-bottom: 2px solid #b4232c;
+
+  border-radius: 0 0 14px 14px;
+}
+
+/*
+  Creates the smile using only CSS.
+
+  No system emoji is being used.
+*/
+.mood-marker-item{
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.mood-marker-label{
+  position: absolute;
+  top:54px;
+  left:50%;
+  transform: translateX(-50%)
+            translateY(4px);
+            opacity: 0;
+  pointer-events: none;
+  white-space: nowrap;
+  padding: 5px 9px;
+  border-radius: 8px;
+  background: #161616;
+  color: #fffdf8;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.2px;
+  box-shadow: 0 6px 16px rgba(22, 22, 22, 0.2);
+  transition: opacity 180ms ease,
+  transform 180ms ease;
+  z-index: 999;
+  
+}
+
+.mood-marker-wrapper:hover .mood-marker-label {
+  opacity: 1;
+  transform: 
+  translateX(-50%)
+  translateY(8px);
+}
+.mood-marker-wrapper:hover .mood-marker{
+  transform: 
+  rotate(-45deg)
+  scale(1.12);
+  box-shadow: 
+  0 14px 30px rgba(22, 22, 22, 0.3)
+  0 5px 10px rgba(22,22,22,0.2)
+}
+
+.mood-face-icon {
+  font-size: 18px;
+
+  /*
+    Controls the size of the temporary mood visual
+    inside each marker.
+  */
+
+  line-height: 1;
 }

@@ -2,6 +2,7 @@ import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import { BrowserRouter } from 'react-router';
 import { Auth0Provider } from '@auth0/auth0-react';
+import 'leaflet/dist/leaflet.css'
 
 import './index.css';
 import App from './App.jsx';

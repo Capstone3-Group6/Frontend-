@@ -1,23 +1,21 @@
-import { Outlet, useLocation } from 'react-router';
+// Added by Musaddik
+import { Outlet } from "react-router";
 import Navbar from './Navbar';
 
-// Layout is the frame every page shares: navbar on top, page below.
-// <Outlet /> is the slot where the matched child route renders.
 export default function Layout({ user, onLogout, authError }) {
-  const location = useLocation();
-  const isHome = location.pathname === '/';
-
   return (
-    <div className='flex min-h-screen flex-col text-left'>
+    <div className='min-h-screen bg-[var(--bg)] text-[var(--text)]'>
       <Navbar user={user} onLogout={onLogout} />
-      <main className={`mx-auto w-full flex-1 px-4 py-6 ${isHome ? 'max-w-5xl' : 'max-w-3xl'}`}>
+      <main className='w-full'>
         {authError && (
-          <p
-            role='alert'
-            className='mb-6 rounded-md bg-red-500/10 px-3 py-2 text-sm text-red-500'
-          >
-            {authError}
-          </p>
+          <div className='mx-auto max-w-7xl px-6 pt-4'>
+            <p
+              role="alert"
+              className="rounded-xl bg-red-500/10 px-4 py-3 text-sm text-red-500"
+            >
+              {authError}
+            </p>
+          </div>
         )}
         <Outlet />
       </main>

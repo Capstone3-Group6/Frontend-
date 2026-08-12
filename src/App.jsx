@@ -11,6 +11,8 @@ import ProtectedPage from './pages/ProtectedPage';
 import ProtectedRoute from './components/ProtectedRoute';
 import Login from './pages/Login';
 import Signup from './pages/Signup';
+import Explore from './pages/Explore';
+import CreatePin from './pages/CreatePin';
 import { getMe, syncUser, logoutRequest } from './api/auth';
 
 // App does two things:
@@ -141,6 +143,8 @@ function App() {
 
         {/* Public on purpose: you can reach these while logged OUT.
             They get setUser so they can report a successful login back up. */}
+        <Route path='/explore' element={<Explore/>}/>
+        <Route path='/create-pin' element={<CreatePin />} />
         <Route path='/login' element={<Login setUser={setUser} />} />
         <Route path='/signup' element={<Signup setUser={setUser} />} />
 

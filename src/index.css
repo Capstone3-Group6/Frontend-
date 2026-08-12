@@ -394,8 +394,8 @@ a {
   rotate(-45deg)
   scale(1.12);
   box-shadow: 
-  0 14px 30px rgba(22, 22, 22, 0.3)
-  0 5px 10px rgba(22,22,22,0.2)
+  0 14px 30px rgba(22, 22, 22, 0.3),
+  0 5px 10px rgba(22,22,22,0.2);
 }
 
 .mood-face-icon {
@@ -407,4 +407,14 @@ a {
   */
 
   line-height: 1;
+}
+ .leaflet-tooltip.mood-hover-tooltip {
+  padding: 0;
+  border: none;
+  background: transparent;
+  box-shadow: none;
+}
+
+.leaflet-tooltip-top.mood-hover-tooltip::before {
+  display: none;
 }

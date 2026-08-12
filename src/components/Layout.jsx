@@ -9,7 +9,7 @@ import Navbar from './Navbar';
           <div className='mx-auto max-w-7xl px-6 pt-4'>
             <p
             role="alert"
-            className="'rounded-xl bg-red-500/10 px-4 py-3 text-sm text-red-500"
+            className="rounded-xl bg-red-500/10 px-4 py-3 text-sm text-red-500"
             >
               {authError}
             </p>

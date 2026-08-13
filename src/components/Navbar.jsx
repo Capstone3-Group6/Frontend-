@@ -85,24 +85,24 @@ function Icon({ name }) {
   );
 }
 
-function NavItem({ to, icon, label, end = false }) {
+function NavItem({ to, icon, label, end = false, neverActive = false }) {
   return (
-    <div className="group relative flex h-10 items-center justify-center">
+    <div className="group relative flex h-11 items-center justify-center">
       <NavLink
         to={to}
         end={end}
         aria-label={label}
         className={({ isActive }) =>
-          `flex h-10 w-10 cursor-pointer items-center justify-center rounded-full transition-[transform,box-shadow,color,background-color] duration-200 ease-out group-hover:-translate-y-0.5 group-hover:scale-110 ${
-            isActive
-              ? "bg-[#B4232C] text-white shadow-[0_10px_24px_rgba(180,35,44,0.22)] group-hover:shadow-[0_14px_30px_rgba(180,35,44,0.28)]"
-              : "text-[#161616] group-hover:bg-[rgba(180,35,44,0.08)] group-hover:text-[#B4232C] group-hover:shadow-[0_10px_24px_rgba(180,35,44,0.12)]"
+          `relative flex h-11 w-11 cursor-pointer items-center justify-center rounded-full transition-[transform,box-shadow,color,background-color] duration-200 ease-out hover:-translate-y-1 hover:scale-110 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-[rgba(180,35,44,0.16)] ${
+            isActive && !neverActive
+              ? "bg-[#B4232C] text-white shadow-[0_12px_28px_rgba(180,35,44,0.25)] after:absolute after:-bottom-1.5 after:h-1.5 after:w-1.5 after:rounded-full after:bg-[#B4232C] after:content-[''] hover:shadow-[0_16px_34px_rgba(180,35,44,0.32)]"
+              : "text-[#161616] hover:bg-[rgba(180,35,44,0.08)] hover:text-[#B4232C] hover:shadow-[0_12px_28px_rgba(180,35,44,0.14)]"
           }`
         }
       >
         <Icon name={icon} />
       </NavLink>
-      <span className="pointer-events-none absolute left-1/2 top-full z-50 mt-2 -translate-x-1/2 translate-y-1 whitespace-nowrap rounded-md bg-[#161616] px-2 py-1 text-xs font-bold text-[#FFFDFC] opacity-0 shadow-lg transition-all duration-200 group-hover:translate-y-0 group-hover:opacity-100">
+      <span className="pointer-events-none absolute left-1/2 top-full z-50 mt-2 -translate-x-1/2 translate-y-[5px] whitespace-nowrap rounded-full bg-[#161616] px-3 py-1.5 text-xs font-bold text-[#FFFDFC] opacity-0 shadow-[0_12px_24px_rgba(22,22,22,0.22)] transition-all duration-200 ease-out group-hover:translate-y-0 group-hover:opacity-100">
         {label}
       </span>
     </div>
@@ -111,16 +111,16 @@ function NavItem({ to, icon, label, end = false }) {
 
 function IconButton({ icon, label, onClick }) {
   return (
-    <div className="group relative flex h-10 items-center justify-center">
+    <div className="group relative flex h-11 items-center justify-center">
       <button
         type="button"
         onClick={onClick}
         aria-label={label}
-        className="flex h-10 w-10 cursor-pointer items-center justify-center rounded-full text-[#161616] transition-[transform,box-shadow,color,background-color] duration-200 ease-out group-hover:-translate-y-0.5 group-hover:scale-110 group-hover:bg-[rgba(180,35,44,0.08)] group-hover:text-[#B4232C] group-hover:shadow-[0_10px_24px_rgba(180,35,44,0.12)]"
+        className="flex h-11 w-11 cursor-pointer items-center justify-center rounded-full text-[#161616] transition-[transform,box-shadow,color,background-color] duration-200 ease-out hover:-translate-y-1 hover:scale-110 hover:bg-[rgba(180,35,44,0.08)] hover:text-[#B4232C] hover:shadow-[0_12px_28px_rgba(180,35,44,0.14)] focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-[rgba(180,35,44,0.16)]"
       >
         <Icon name={icon} />
       </button>
-      <span className="pointer-events-none absolute left-1/2 top-full z-50 mt-2 -translate-x-1/2 translate-y-1 whitespace-nowrap rounded-md bg-[#161616] px-2 py-1 text-xs font-bold text-[#FFFDFC] opacity-0 shadow-lg transition-all duration-200 group-hover:translate-y-0 group-hover:opacity-100">
+      <span className="pointer-events-none absolute left-1/2 top-full z-50 mt-2 -translate-x-1/2 translate-y-[5px] whitespace-nowrap rounded-full bg-[#161616] px-3 py-1.5 text-xs font-bold text-[#FFFDFC] opacity-0 shadow-[0_12px_24px_rgba(22,22,22,0.22)] transition-all duration-200 ease-out group-hover:translate-y-0 group-hover:opacity-100">
         {label}
       </span>
     </div>
@@ -130,18 +130,18 @@ function IconButton({ icon, label, onClick }) {
 export default function Navbar({ user, onLogout }) {
   return (
     <header className="sticky top-0 z-50 border-b border-[rgba(22,22,22,0.06)] bg-[rgba(255,253,250,0.78)] backdrop-blur-[14px] transition-all duration-200 hover:bg-[rgba(255,253,250,0.9)]">
-      <nav className="mx-auto flex h-16 w-full max-w-[1500px] items-center gap-4 px-4 sm:px-6">
+      <nav className="mx-auto flex h-16 w-full max-w-[1520px] items-center gap-3 px-3 sm:px-5 lg:px-8">
         <NavLink to="/" className="mr-auto flex items-center gap-3" aria-label="Mood Map home">
           <MoodLogo />
-          <p className="text-lg font-black tracking-[-0.035em] text-[#161616]">
+          <p className="hidden text-lg font-black tracking-normal text-[#161616] min-[430px]:block">
             Mood Map
           </p>
         </NavLink>
 
-        <div className="flex items-center gap-6 sm:gap-7">
-          <NavItem to="/" end icon="explore" label="Explore" />
+        <div className="flex items-center gap-1.5 sm:gap-3 lg:gap-5">
+          <NavItem to="/explore" icon="explore" label="Explore" />
           <NavItem to="/saved" icon="saved" label="Saved" />
-          <NavItem to="/create" icon="add" label="Add Mood" />
+          <NavItem to="/explore" icon="add" label="Add Mood" neverActive />
           {user ? (
             <>
               <NavItem to="/protected" icon="profile" label="Profile" />

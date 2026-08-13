@@ -6,7 +6,6 @@ import Typewriter from 'typewriter-effect';
 import { DotLottieReact } from '@lottiefiles/dotlottie-react';
 import Moodie from './Moodie';
 
-
 const MOOD_OPTIONS = [
   { label: '😊 Happy',     value: 'Happy',     bg: '#FDE68A' },
   { label: '🧘 Calm',      value: 'Calm',      bg: '#BAE6FD' },
@@ -105,8 +104,6 @@ export default function MoodInputModal({ isOpen, onClose, onSubmit, isLoading })
                   style={{ width: '120px', height: '60px' }}
                 />
               </div>
-
-
             </div>
           </div>
         ) : (

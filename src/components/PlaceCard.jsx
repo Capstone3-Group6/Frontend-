@@ -1,10 +1,11 @@
+// Added by Musaddik
 // PlaceCard.jsx — Displays basic information for the selected place
 
 export default function PlaceCard({ place, onClose }) {
   if (!place) return null;
 
-  const name    = place.displayName?.text || 'Unknown Place';
-  const address = place.formattedAddress  || '';
+  const name    = place.displayName?.text || place.name || 'Unknown Place';
+  const address = place.formattedAddress  || place.address || '';
 
   return (
     <div

@@ -32,9 +32,6 @@ export default function Moodie({ size = 'md', state = 'waving', style = {} }) {
         ...style,
       }}
     >
-      {/* 
-        custom Lottie animation (LOADING_LOTTIE)
-      */}
       <DotLottieReact
         src={lottieSrc}
         loop

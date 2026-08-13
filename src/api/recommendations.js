@@ -1,3 +1,4 @@
+// Added by Musaddik
 // api/recommendations.js — calls the backend recommendations API
 const BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000';
 
@@ -18,9 +19,15 @@ export async function getRecommendations(mood, latitude, longitude) {
 
   if (!res.ok) {
     const body = await res.json().catch(() => ({}));
-    throw new Error(body.error || `Could not fetch recommendations (${res.status})`);
+    const error = new Error(
+      body.error || `Could not fetch recommendations (${res.status})`,
+    );
+    error.code = body.code;
+    error.detail = body.detail;
+    error.missing = body.missing;
+    error.provider = body.provider;
+    throw error;
   }
 
   return res.json();
 }
-

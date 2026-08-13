@@ -3,13 +3,13 @@ import { useLocation, useNavigate } from 'react-router';
 import MoodMap from '../components/MoodMap';
 
 const moods = [
-  { name: 'Calm', emoji: '😌' },
-  { name: 'Creative', emoji: '🎨' },
-  { name: 'Fun', emoji: '😄' },
-  { name: 'Energetic', emoji: '⚡' },
-  { name: 'Romantic', emoji: '❤️' },
-  { name: 'Focused', emoji: '🌿' },
-  { name: 'Inspiring', emoji: '✨' },
+  { name: 'Calm', emoji: '😌', soft: '#E7F6FF', ink: '#2878C7', glow: 'rgba(40,120,199,0.22)' },
+  { name: 'Creative', emoji: '🎨', soft: '#F0E8FF', ink: '#7450D8', glow: 'rgba(116,80,216,0.24)' },
+  { name: 'Fun', emoji: '😄', soft: '#FFF3CF', ink: '#B77900', glow: 'rgba(183,121,0,0.22)' },
+  { name: 'Energetic', emoji: '⚡', soft: '#FFEAD6', ink: '#D96800', glow: 'rgba(217,104,0,0.24)' },
+  { name: 'Romantic', emoji: '❤️', soft: '#FFE4EC', ink: '#D83D66', glow: 'rgba(216,61,102,0.22)' },
+  { name: 'Focused', emoji: '🌿', soft: '#E4F8EA', ink: '#2C8F4C', glow: 'rgba(44,143,76,0.22)' },
+  { name: 'Inspiring', emoji: '✨', soft: '#F4ECFF', ink: '#8656D8', glow: 'rgba(134,86,216,0.23)' },
 ];
 
 const places = [
@@ -101,8 +101,8 @@ function SaveIcon() {
 
 function SearchControls() {
   return (
-    <div className="flex h-11 items-center gap-2">
-      <label className="group flex h-11 w-[min(68vw,390px)] items-center rounded-full border border-[rgba(22,22,22,0.08)] bg-[#FFFDFC] px-3 shadow-[0_8px_22px_rgba(22,22,22,0.05)] transition duration-200 focus-within:border-[rgba(180,35,44,0.35)] focus-within:ring-4 focus-within:ring-[rgba(180,35,44,0.10)]">
+    <div className="flex w-full items-center gap-2">
+      <label className="group flex h-14 min-w-0 flex-1 items-center rounded-full border border-[rgba(22,22,22,0.08)] bg-[#FFFDFC] px-3 shadow-[0_10px_26px_rgba(22,22,22,0.06)] transition duration-200 focus-within:border-[rgba(180,35,44,0.35)] focus-within:ring-4 focus-within:ring-[rgba(180,35,44,0.10)] sm:max-w-[520px]">
         <span className="mr-2 flex h-8 w-8 items-center justify-center rounded-full bg-[#F7F3EE] text-[#161616] transition group-focus-within:text-[#B4232C]">
           <SearchIcon />
         </span>
@@ -114,7 +114,8 @@ function SearchControls() {
       </label>
 
       <button
-        className="group relative flex h-11 w-11 cursor-pointer items-center justify-center rounded-full border border-[rgba(22,22,22,0.08)] bg-[#FFFDFC] text-[#161616] shadow-[0_8px_22px_rgba(22,22,22,0.05)] transition duration-200 hover:-translate-y-0.5 hover:scale-110 hover:bg-[rgba(180,35,44,0.08)] hover:text-[#B4232C]"
+        type="button"
+        className="group relative flex h-14 w-14 shrink-0 cursor-pointer items-center justify-center rounded-full border border-[rgba(22,22,22,0.08)] bg-[#FFFDFC] text-[#161616] shadow-[0_10px_26px_rgba(22,22,22,0.06)] transition duration-200 hover:-translate-y-1 hover:rotate-[-3deg] hover:scale-105 hover:bg-[rgba(180,35,44,0.08)] hover:text-[#B4232C] focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-[rgba(180,35,44,0.14)]"
         aria-label="Filter"
       >
         <FilterIcon />
@@ -126,37 +127,46 @@ function SearchControls() {
   );
 }
 
-function MoodCarousel() {
-  const loop = [...moods, ...moods];
-
+function MoodFilterBar({ selectedMood, onSelectMood }) {
   return (
-    <div className="mood-carousel group relative flex h-16 max-w-full items-start overflow-hidden rounded-2xl border border-[rgba(22,22,22,0.07)] bg-white/55 px-3 pt-1 shadow-[0_4px_16px_rgba(22,22,22,0.04)] [mask-image:linear-gradient(90deg,transparent,black_7%,black_93%,transparent)]">
-      <div className="mood-track flex w-max items-start gap-9">
-        {loop.map((mood, index) => (
-          <div
-            key={`${mood.name}-${index}`}
-            className="group/item mood-float relative flex h-10 w-10 shrink-0 items-center justify-center"
-          >
+    <div className="min-w-0 overflow-x-auto pb-1">
+      <div className="flex min-w-max items-center gap-2">
+        {moods.map((mood) => {
+          const isSelected = selectedMood === mood.name;
+
+          return (
             <button
-              className="flex h-9 w-9 cursor-pointer items-center justify-center rounded-full bg-[#FFFDFC]/80 text-lg shadow-[0_6px_16px_rgba(22,22,22,0.07)] ring-1 ring-[#DDD7D2] transition duration-200 group-hover/item:-translate-y-0.5 group-hover/item:scale-110 group-hover/item:bg-[rgba(180,35,44,0.08)] group-hover/item:shadow-[0_12px_26px_rgba(180,35,44,0.12)]"
-              aria-label={mood.name}
+              key={mood.name}
+              type="button"
+              onClick={() => onSelectMood(isSelected ? 'All' : mood.name)}
+              className="rounded-full border px-4 py-2.5 text-sm font-black transition duration-200 hover:-translate-y-1 hover:scale-[1.03] focus-visible:outline-none focus-visible:ring-4"
+              style={{
+                background: isSelected ? mood.soft : '#FFFDFC',
+                borderColor: isSelected ? mood.ink : 'rgba(22,22,22,0.08)',
+                color: isSelected ? mood.ink : '#171326',
+                boxShadow: isSelected
+                  ? `0 12px 28px ${mood.glow}`
+                  : `0 8px 20px rgba(22,22,22,0.045)`,
+                '--tw-ring-color': mood.glow,
+              }}
+              aria-pressed={isSelected}
             >
-              {mood.emoji}
+              {mood.emoji} {mood.name}
             </button>
-            <span className="pointer-events-none absolute left-1/2 top-10 z-50 -translate-x-1/2 translate-y-1 whitespace-nowrap rounded-md bg-[#161616] px-2 py-1 text-xs font-bold text-[#FFFDFC] opacity-0 shadow-lg transition-all duration-200 group-hover/item:translate-y-0 group-hover/item:opacity-100">
-              {mood.name}
-            </span>
-          </div>
-        ))}
+          );
+        })}
       </div>
     </div>
   );
 }
 
 function NearbyPlaceCard({ place }) {
+  const moodName = place.mood.replace(/^\S+\s/, '');
+  const mood = moods.find((item) => item.name === moodName) || moods[0];
+
   return (
-    <article className="group flex cursor-pointer gap-3 rounded-2xl p-2 transition duration-200 hover:-translate-y-0.5 hover:bg-[#F7F3EE] hover:shadow-[0_12px_26px_rgba(22,22,22,0.08)]">
-      <div className="h-[72px] w-[84px] shrink-0 overflow-hidden rounded-xl ring-1 ring-black/5">
+    <article className="group flex cursor-pointer gap-3 rounded-3xl p-2.5 transition duration-200 hover:-translate-y-1 hover:bg-[#F7F3EE] hover:shadow-[0_14px_30px_rgba(22,22,22,0.09)]">
+      <div className="h-[82px] w-[96px] shrink-0 overflow-hidden rounded-2xl ring-1 ring-black/5">
         <img
           src={place.image}
           alt={place.name}
@@ -175,11 +185,14 @@ function NearbyPlaceCard({ place }) {
             <SaveIcon />
           </button>
         </div>
-        <p className="mt-1 line-clamp-1 text-xs font-medium text-[#6F6A66]">
+        <p className="mt-1 line-clamp-2 text-[13px] font-medium leading-5 text-[#6F6A66]">
           {place.description}
         </p>
         <div className="mt-2 flex items-center justify-between gap-2">
-          <span className="rounded-full bg-[#F5DADB] px-2 py-0.5 text-[11px] font-black text-[#7D1820]">
+          <span
+            className="rounded-full px-2.5 py-1 text-[11px] font-black"
+            style={{ background: mood.soft, color: mood.ink }}
+          >
             {place.mood}
           </span>
           <span className="shrink-0 text-[11px] font-bold text-[#6F6A66]">
@@ -202,7 +215,7 @@ function MapPanel({
   focusPin,
 }) {
   return (
-    <div className="relative min-h-[520px] overflow-hidden rounded-[26px] border border-[#D9D4CE] bg-[#EDE7DF] shadow-[0_24px_58px_rgba(22,22,22,0.14)] lg:h-full lg:min-h-0">
+    <div className="relative min-h-[440px] overflow-hidden rounded-[28px] border border-[#D9D4CE] bg-[#EDE7DF] shadow-[0_24px_58px_rgba(22,22,22,0.14)] transition duration-300 hover:shadow-[0_28px_66px_rgba(22,22,22,0.17)] sm:min-h-[500px] lg:h-full lg:min-h-[560px]">
       <MoodMap
         isAddingPin={isAddingPin}
         onStartAddingPin={onStartAddingPin}
@@ -228,6 +241,11 @@ export default function HomePage() {
   // from /create-pin with a newly saved pin.
 
   const [isAddingPin, setIsAddingPin] = useState(false);
+  const [selectedMood, setSelectedMood] = useState('All');
+  const visiblePlaces =
+    selectedMood === 'All'
+      ? places
+      : places.filter((place) => place.mood.includes(selectedMood));
 
   // HomePage is the single source of truth for add-pin mode.
   //
@@ -262,18 +280,23 @@ export default function HomePage() {
     <main className="w-full">
       <section
         ref={mapSectionRef}
-        className="mx-auto flex w-full max-w-[1500px] flex-col px-4 pb-8 pt-3 sm:px-6 lg:min-h-[calc(100vh-64px)]"
+        className="mx-auto flex w-full max-w-[1520px] animate-[soft-page-in_280ms_ease-out_both] flex-col px-3 pb-8 pt-4 sm:px-5 lg:min-h-[calc(100vh-64px)] lg:px-8"
       >
-        <div className="mb-3 grid gap-2 lg:grid-cols-[auto_minmax(0,1fr)] lg:items-center">
-          <SearchControls />
-          <MoodCarousel />
+        <div className="mb-4 rounded-[28px] border border-[rgba(22,22,22,0.07)] bg-white/62 p-3 shadow-[0_12px_34px_rgba(22,22,22,0.06)] backdrop-blur">
+          <div className="grid gap-3 lg:grid-cols-[minmax(320px,520px)_minmax(0,1fr)] lg:items-center">
+            <SearchControls />
+            <MoodFilterBar
+              selectedMood={selectedMood}
+              onSelectMood={setSelectedMood}
+            />
+          </div>
         </div>
 
-        <div className="grid flex-1 gap-4 lg:grid-cols-[330px_minmax(0,1fr)]">
-          <aside className="flex min-h-[340px] flex-col rounded-[26px] border border-[#D9D4CE] bg-[#FFFDFC] p-3 shadow-[0_18px_42px_rgba(22,22,22,0.08)] lg:min-h-[600px]">
-            <div className="mb-2 px-1">
-              <h2 className="m-0 text-lg font-black tracking-[-0.02em] text-[#161616]">
-                Top mood pins nearby
+        <div className="grid flex-1 gap-4 lg:grid-cols-[380px_minmax(0,1fr)]">
+          <aside className="flex min-h-[340px] flex-col rounded-[28px] border border-[#D9D4CE] bg-[#FFFDFC] p-4 shadow-[0_18px_42px_rgba(22,22,22,0.08)] transition duration-300 hover:shadow-[0_22px_52px_rgba(22,22,22,0.1)] lg:max-h-[600px] lg:min-h-[560px]">
+            <div className="mb-3 px-1">
+              <h2 className="m-0 text-xl font-black tracking-normal text-[#161616]">
+                Nearby Mood Pins
               </h2>
               <p className="mt-0.5 text-sm font-semibold text-[#6F6A66]">
                 New York City area
@@ -281,7 +304,7 @@ export default function HomePage() {
             </div>
 
             <div className="min-h-0 flex-1 space-y-1 overflow-y-auto pr-1">
-              {places.map((place) => (
+              {visiblePlaces.map((place) => (
                 <NearbyPlaceCard key={place.name} place={place} />
               ))}
             </div>

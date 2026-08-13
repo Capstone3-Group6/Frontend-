@@ -13,14 +13,14 @@ import 'leaflet/dist/leaflet.css';
 import { readTemporaryPins } from '../api/pins';
 
 const moodData = {
-  Happy: { label: 'Happy', face: '😄' },
-  Fun: { label: 'Fun', face: '😄' },
-  Calm: { label: 'Calm', face: '😌' },
-  Creative: { label: 'Creative', face: '🎨' },
-  Energetic: { label: 'Energetic', face: '⚡' },
-  Romantic: { label: 'Romantic', face: '❤️' },
-  Focused: { label: 'Focused', face: '🌿' },
-  Inspiring: { label: 'Inspiring', face: '✨' },
+  Happy: { label: 'Happy', face: '😄', color: '#D99A00' },
+  Fun: { label: 'Fun', face: '😄', color: '#D99A00' },
+  Calm: { label: 'Calm', face: '😌', color: '#2878C7' },
+  Creative: { label: 'Creative', face: '🎨', color: '#7450D8' },
+  Energetic: { label: 'Energetic', face: '⚡', color: '#F07A18' },
+  Romantic: { label: 'Romantic', face: '❤️', color: '#D83D66' },
+  Focused: { label: 'Focused', face: '🌿', color: '#2C8F4C' },
+  Inspiring: { label: 'Inspiring', face: '✨', color: '#8656D8' },
 };
 
 function createMoodIcon(mood) {
@@ -33,7 +33,7 @@ function createMoodIcon(mood) {
     className: 'mood-marker-wrapper',
     html: `
       <div class="mood-marker-item">
-        <div class="mood-marker">
+        <div class="mood-marker" style="--marker-color: ${selectedMood.color}">
           <div class="mood-face mood-face-icon">
             ${selectedMood.face}
           </div>
@@ -212,7 +212,7 @@ export default function MoodMap({
         center={center}
         zoom={13}
         dragging
-        scrollWheelZoom
+        scrollWheelZoom={false}
         doubleClickZoom
         zoomControl
         className="h-full w-full"
@@ -244,7 +244,7 @@ export default function MoodMap({
                 opacity={1}
                 className="mood-hover-tooltip"
               >
-                <div className="flex w-[220px] items-center gap-3 rounded-2xl bg-white p-2 shadow-xl">
+                <div className="mood-tooltip-card flex w-[230px] items-center gap-3 rounded-2xl bg-white p-2 shadow-[0_18px_42px_rgba(22,22,22,0.18)]">
                   <img
                     src={pin.image}
                     alt={pin.placeName}
@@ -330,13 +330,13 @@ export default function MoodMap({
       <button
         type="button"
         onClick={onStartAddingPin}
-        className="absolute right-6 top-5 z-[1000] rounded-full bg-gradient-to-r from-purple-600 via-pink-500 to-orange-400 px-6 py-3 font-bold text-white shadow-xl transition hover:scale-105"
+        className="absolute right-4 top-4 z-[1000] rounded-full bg-gradient-to-r from-purple-600 via-pink-500 to-orange-400 bg-[length:140%_100%] px-5 py-3 text-sm font-black text-white shadow-[0_16px_34px_rgba(219,39,119,0.28)] transition duration-200 hover:-translate-y-0.5 hover:scale-[1.03] hover:bg-[position:100%_0] hover:shadow-[0_20px_44px_rgba(219,39,119,0.34)] active:scale-[0.98] focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-pink-400/25 sm:right-6 sm:top-5 sm:px-6"
       >
         + Add Mood Pin
       </button>
 
       {isAddingPin && (
-        <div className="absolute left-1/2 top-5 z-[1000] -translate-x-1/2 rounded-full bg-[#161616] px-5 py-3 text-sm font-semibold text-white shadow-xl">
+        <div className="location-pick-pill absolute left-1/2 top-20 z-[1000] w-[min(92%,390px)] -translate-x-1/2 rounded-full bg-[#161616] px-5 py-3 text-center text-sm font-bold text-white shadow-[0_18px_40px_rgba(22,22,22,0.26)] sm:top-5">
           📍 Click anywhere on the map to choose a location
         </div>
       )}

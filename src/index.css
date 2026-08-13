@@ -17,6 +17,7 @@
   --red-dark: #7d1820;
 
   --accent: #b4232c;
+  --accent-bg: rgba(180, 35, 44, 0.12);
 
   --shadow:
     0 18px 50px rgba(22, 22, 22, 0.1),
@@ -207,7 +208,6 @@ a {
 
 .mood-marker {
   position: relative;
-
   width: 48px;
   height: 48px;
 
@@ -219,13 +219,13 @@ a {
 
   transform: rotate(-45deg);
 
-  background: #b4232c;
-
-  border: 4px solid #fffdf8;
+  background: #fffdfc;
+  border: 4px solid var(--marker-color, #b4232c);
 
   box-shadow:
-    0 8px 20px rgba(22, 22, 22, 0.22),
-    0 2px 5px rgba(22, 22, 22, 0.16);
+    0 12px 24px color-mix(in srgb, var(--marker-color, #b4232c) 28%, transparent),
+    0 8px 20px rgba(22, 22, 22, 0.2),
+    inset 0 0 0 3px rgba(255, 253, 252, 0.92);
 
   transition:
     transform 200ms ease,
@@ -256,10 +256,12 @@ a {
 
 
 .mood-marker:hover {
-  transform: rotate(-45deg) scale(1.1);
+  transform: rotate(-45deg) translateY(-3px) scale(1.15);
 
   box-shadow:
-    0 12px 28px rgba(22, 22, 22, 0.28),
+    0 0 0 8px color-mix(in srgb, var(--marker-color, #b4232c) 16%, transparent),
+    0 16px 34px color-mix(in srgb, var(--marker-color, #b4232c) 32%, transparent),
+    0 12px 28px rgba(22, 22, 22, 0.24),
     0 4px 8px rgba(22, 22, 22, 0.18);
 }
 
@@ -344,7 +346,7 @@ a {
   width: 14px;
   height: 7px;
 
-  border-bottom: 2px solid #b4232c;
+  border-bottom: 2px solid var(--marker-color, #b4232c);
 
   border-radius: 0 0 14px 14px;
 }
@@ -392,9 +394,11 @@ a {
 .mood-marker-wrapper:hover .mood-marker{
   transform: 
   rotate(-45deg)
+  translateY(-3px)
   scale(1.12);
   box-shadow: 
-  0 14px 30px rgba(22, 22, 22, 0.3),
+  0 0 0 8px color-mix(in srgb, var(--marker-color, #b4232c) 15%, transparent),
+  0 14px 30px color-mix(in srgb, var(--marker-color, #b4232c) 32%, transparent),
   0 5px 10px rgba(22,22,22,0.2);
 }
 
@@ -417,4 +421,89 @@ a {
 
 .leaflet-tooltip-top.mood-hover-tooltip::before {
   display: none;
+}
+
+.mood-tooltip-card {
+  animation: mood-tooltip-in 180ms ease-out both;
+  transform-origin: bottom center;
+}
+
+.location-pick-pill {
+  animation: location-pill-in 220ms ease-out both;
+}
+
+@keyframes mood-tooltip-in {
+  from {
+    opacity: 0;
+    transform: translateY(6px) scale(0.96);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes location-pill-in {
+  from {
+    opacity: 0;
+    transform: translate(-50%, -6px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translate(-50%, 0);
+  }
+}
+
+@keyframes create-panel-in {
+  from {
+    opacity: 0;
+    transform: translateY(14px) scale(0.99);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes soft-page-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+button,
+a,
+input,
+textarea,
+select {
+  -webkit-tap-highlight-color: transparent;
+}
+
+button:focus-visible,
+a:focus-visible,
+input:focus-visible,
+textarea:focus-visible,
+select:focus-visible {
+  outline: 3px solid rgba(180, 35, 44, 0.22);
+  outline-offset: 3px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
 }

@@ -9,10 +9,10 @@ import TaskDetailPage from './pages/TaskDetailPage';
 import NotFoundPage from './pages/NotFoundPage';
 import ProtectedPage from './pages/ProtectedPage';
 import ProtectedRoute from './components/ProtectedRoute';
-import Login from './pages/Login';
-import Signup from './pages/Signup';
+import Auth from './pages/Auth';
 import Explore from './pages/Explore';
 import CreatePin from './pages/CreatePin';
+import Saved from './pages/Saved';
 import { getMe, syncUser, logoutRequest } from './api/auth';
 
 // App does two things:
@@ -145,8 +145,15 @@ function App() {
             They get setUser so they can report a successful login back up. */}
         <Route path='/explore' element={<Explore/>}/>
         <Route path='/create-pin' element={<CreatePin />} />
-        <Route path='/login' element={<Login setUser={setUser} />} />
-        <Route path='/signup' element={<Signup setUser={setUser} />} />
+        <Route path='/saved' element={<Saved user={user} />} />
+        <Route
+          path='/login'
+          element={<Auth key='login' initialMode='login' setUser={setUser} />}
+        />
+        <Route
+          path='/signup'
+          element={<Auth key='signup' initialMode='signup' setUser={setUser} />}
+        />
 
         <Route path='/tasks' element={<TasksPage />} />
         <Route path='/tasks/:id' element={<TaskDetailPage />} />

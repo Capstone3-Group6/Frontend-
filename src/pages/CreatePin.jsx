@@ -6,6 +6,8 @@ export default function CreatePin() {
   const location = useLocation();
   const navigate = useNavigate();
   const selectedLocation = location.state;
+  const defaultPinImage =
+    'https://images.unsplash.com/photo-1522083165195-3424ed129620?auto=format&fit=crop&w=600&q=80';
 
   // selectedLocation comes from MoodMap.jsx after the user clicks
   // a point on the Leaflet map while Add Mood Pin mode is active.
@@ -44,9 +46,10 @@ export default function CreatePin() {
       mood: formData.mood,
       description: formData.description || formData.notes || 'A new mood pin.',
       notes: formData.notes,
+      photoName: formData.photoName,
+      privacy: formData.privacy || 'Public',
       username: '@samiallo',
-      image:
-        'https://images.unsplash.com/photo-1522083165195-3424ed129620?auto=format&fit=crop&w=600&q=80',
+      image: formData.image || defaultPinImage,
       avatar:
         'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=100&q=80',
     };

@@ -1,6 +1,10 @@
 import { useEffect, useRef, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router';
+import { getRecommendations } from '../api/recommendations';
 import MoodMap from '../components/MoodMap';
+import MoodieButton from '../components/MoodieButton';
+import MoodInputModal from '../components/MoodInputModal';
+import PlaceCard from '../components/PlaceCard';
 
 const moods = [
   { name: 'Calm', emoji: '😌', soft: '#E7F6FF', ink: '#2878C7', glow: 'rgba(40,120,199,0.22)' },
@@ -60,6 +64,11 @@ const places = [
   },
 ];
 
+const mapFallbackLocation = {
+  latitude: 40.7128,
+  longitude: -74.006,
+};
+
 function SearchIcon() {
   return (
     <svg viewBox="0 0 24 24" className="h-5 w-5" fill="none" aria-hidden="true">
@@ -101,8 +110,8 @@ function SaveIcon() {
 
 function SearchControls() {
   return (
-    <div className="flex w-full items-center gap-2">
-      <label className="group flex h-14 min-w-0 flex-1 items-center rounded-full border border-[rgba(22,22,22,0.08)] bg-[#FFFDFC] px-3 shadow-[0_10px_26px_rgba(22,22,22,0.06)] transition duration-200 focus-within:border-[rgba(180,35,44,0.35)] focus-within:ring-4 focus-within:ring-[rgba(180,35,44,0.10)] sm:max-w-[520px]">
+    <>
+      <label className="group flex h-[52px] min-w-0 items-center rounded-full border border-[rgba(22,22,22,0.08)] bg-[#FFFDFC] px-3 shadow-[0_8px_20px_rgba(22,22,22,0.055)] transition duration-200 focus-within:border-[rgba(180,35,44,0.35)] focus-within:shadow-[0_12px_28px_rgba(180,35,44,0.1)] focus-within:ring-4 focus-within:ring-[rgba(180,35,44,0.10)]">
         <span className="mr-2 flex h-8 w-8 items-center justify-center rounded-full bg-[#F7F3EE] text-[#161616] transition group-focus-within:text-[#B4232C]">
           <SearchIcon />
         </span>
@@ -115,44 +124,52 @@ function SearchControls() {
 
       <button
         type="button"
-        className="group relative flex h-14 w-14 shrink-0 cursor-pointer items-center justify-center rounded-full border border-[rgba(22,22,22,0.08)] bg-[#FFFDFC] text-[#161616] shadow-[0_10px_26px_rgba(22,22,22,0.06)] transition duration-200 hover:-translate-y-1 hover:rotate-[-3deg] hover:scale-105 hover:bg-[rgba(180,35,44,0.08)] hover:text-[#B4232C] focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-[rgba(180,35,44,0.14)]"
+        className="group relative flex h-[52px] w-[52px] shrink-0 cursor-pointer items-center justify-center rounded-full border border-[rgba(22,22,22,0.08)] bg-[#FFFDFC] text-[#161616] shadow-[0_8px_20px_rgba(22,22,22,0.055)] transition duration-200 hover:-translate-y-1 hover:rotate-[-3deg] hover:scale-[1.08] hover:bg-[rgba(180,35,44,0.08)] hover:text-[#B4232C] hover:shadow-[0_14px_30px_rgba(180,35,44,0.12)] focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-[rgba(180,35,44,0.14)]"
         aria-label="Filter"
       >
         <FilterIcon />
-        <span className="pointer-events-none absolute left-1/2 top-12 z-50 -translate-x-1/2 translate-y-1 rounded-full bg-[#161616] px-2.5 py-1 text-xs font-bold text-[#FFFDFC] opacity-0 shadow-lg transition duration-200 group-hover:translate-y-0 group-hover:opacity-100">
+        <span className="pointer-events-none absolute left-1/2 top-[48px] z-50 -translate-x-1/2 translate-y-1 rounded-full bg-[#161616] px-2.5 py-1 text-xs font-bold text-[#FFFDFC] opacity-0 shadow-lg transition duration-200 group-hover:translate-y-0 group-hover:opacity-100">
           Filter
         </span>
       </button>
-    </div>
+    </>
   );
 }
 
 function MoodFilterBar({ selectedMood, onSelectMood }) {
   return (
-    <div className="min-w-0 overflow-x-auto pb-1">
-      <div className="flex min-w-max items-center gap-2">
-        {moods.map((mood) => {
+    <div className="col-span-2 min-w-0 overflow-x-auto overflow-y-visible pb-7 md:col-span-1 md:overflow-visible md:pb-0">
+      <div className="flex min-w-max items-center gap-2 md:w-full md:min-w-0 md:justify-between">
+        {moods.map((mood, index) => {
           const isSelected = selectedMood === mood.name;
 
           return (
-            <button
-              key={mood.name}
-              type="button"
-              onClick={() => onSelectMood(isSelected ? 'All' : mood.name)}
-              className="rounded-full border px-4 py-2.5 text-sm font-black transition duration-200 hover:-translate-y-1 hover:scale-[1.03] focus-visible:outline-none focus-visible:ring-4"
-              style={{
-                background: isSelected ? mood.soft : '#FFFDFC',
-                borderColor: isSelected ? mood.ink : 'rgba(22,22,22,0.08)',
-                color: isSelected ? mood.ink : '#171326',
-                boxShadow: isSelected
-                  ? `0 12px 28px ${mood.glow}`
-                  : `0 8px 20px rgba(22,22,22,0.045)`,
-                '--tw-ring-color': mood.glow,
-              }}
-              aria-pressed={isSelected}
-            >
-              {mood.emoji} {mood.name}
-            </button>
+            <div key={mood.name} className="mood-orbit-wrap">
+              <button
+                type="button"
+                onClick={() => onSelectMood(isSelected ? 'All' : mood.name)}
+                className="mood-orbit-button"
+                style={{
+                  background: isSelected ? mood.soft : '#FFFDFC',
+                  borderColor: isSelected ? mood.ink : 'rgba(22,22,22,0.08)',
+                  color: mood.ink,
+                  boxShadow: isSelected
+                    ? `0 14px 30px ${mood.glow}`
+                    : `0 9px 22px rgba(22,22,22,0.055)`,
+                  '--mood-glow': mood.glow,
+                  '--mood-ink': mood.ink,
+                  '--orbit-delay': `${index * -0.55}s`,
+                }}
+                aria-label={mood.name}
+                aria-pressed={isSelected}
+              >
+                <span className="mood-orbit-ring" aria-hidden="true" />
+                <span className="mood-orbit-emoji" aria-hidden="true">
+                  {mood.emoji}
+                </span>
+              </button>
+              <span className="mood-orbit-label">{mood.name}</span>
+            </div>
           );
         })}
       </div>
@@ -213,6 +230,12 @@ function MapPanel({
   onLocationSelected,
   refreshKey,
   focusPin,
+  aiPlaces,
+  selectedAiPlace,
+  onAiPlaceSelect,
+  onCloseAiPlace,
+  onOpenMoodie,
+  isMoodieOpen,
 }) {
   return (
     <div className="relative min-h-[440px] overflow-hidden rounded-[28px] border border-[#D9D4CE] bg-[#EDE7DF] shadow-[0_24px_58px_rgba(22,22,22,0.14)] transition duration-300 hover:shadow-[0_28px_66px_rgba(22,22,22,0.17)] sm:min-h-[500px] lg:h-full lg:min-h-[560px]">
@@ -222,11 +245,19 @@ function MapPanel({
         onLocationSelected={onLocationSelected}
         refreshKey={refreshKey}
         focusPin={focusPin}
+        aiPlaces={aiPlaces}
+        onAiPlaceSelect={onAiPlaceSelect}
       />
       <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(180deg,rgba(247,243,238,0.18),transparent_30%,rgba(22,22,22,0.08))]" />
       <div className="absolute left-4 top-4 z-10 rounded-full border border-[#D9D4CE] bg-[#FFFDFC]/92 px-3 py-2 shadow-[0_12px_28px_rgba(22,22,22,0.10)] backdrop-blur">
         <p className="text-xs font-black text-[#161616]">New York City, NY</p>
       </div>
+      {selectedAiPlace && (
+        <div className="absolute bottom-5 left-5 z-[1000] max-w-[calc(100%-116px)]">
+          <PlaceCard place={selectedAiPlace} onClose={onCloseAiPlace} />
+        </div>
+      )}
+      <MoodieButton onClick={onOpenMoodie} isActive={isMoodieOpen} />
     </div>
   );
 }
@@ -242,6 +273,12 @@ export default function HomePage() {
 
   const [isAddingPin, setIsAddingPin] = useState(false);
   const [selectedMood, setSelectedMood] = useState('All');
+  const [isMoodieOpen, setIsMoodieOpen] = useState(false);
+  const [isMoodieLoading, setIsMoodieLoading] = useState(false);
+  const [moodieError, setMoodieError] = useState('');
+  const [moodieSuccess, setMoodieSuccess] = useState('');
+  const [aiPlaces, setAiPlaces] = useState([]);
+  const [selectedAiPlace, setSelectedAiPlace] = useState(null);
   const visiblePlaces =
     selectedMood === 'All'
       ? places
@@ -276,14 +313,82 @@ export default function HomePage() {
     });
   }
 
+  function getMoodieLocation() {
+    if (!navigator.geolocation) {
+      return Promise.resolve(mapFallbackLocation);
+    }
+
+    return new Promise((resolve) => {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          resolve({
+            latitude: position.coords.latitude,
+            longitude: position.coords.longitude,
+          });
+        },
+        () => resolve(mapFallbackLocation),
+        { enableHighAccuracy: false, maximumAge: 300000, timeout: 4000 },
+      );
+    });
+  }
+
+  async function handleMoodieSubmit(moodQuery) {
+    setIsMoodieLoading(true);
+    setMoodieError('');
+    setMoodieSuccess('');
+    setSelectedAiPlace(null);
+
+    try {
+      const location = await getMoodieLocation();
+      const response = await getRecommendations(
+        moodQuery,
+        location.latitude,
+        location.longitude,
+      );
+      const nextPlaces = (response.recommendations || []).map((place) => ({
+        ...place,
+        recommendedMood: moodQuery,
+      }));
+
+      setAiPlaces(nextPlaces);
+      setSelectedAiPlace(nextPlaces[0] || null);
+      setMoodieSuccess(
+        nextPlaces.length
+          ? `Found ${nextPlaces.length} places for "${moodQuery}"`
+          : `No places found for "${moodQuery}"`,
+      );
+
+      if (nextPlaces.length) {
+        setTimeout(() => {
+          setIsMoodieOpen(false);
+          setMoodieSuccess('');
+        }, 950);
+      }
+    } catch (error) {
+      if (error.code === 'RECOMMENDATION_CONFIG_MISSING') {
+        setMoodieError(
+          `The recommendation service is not configured. Missing backend env: ${error.missing?.join(', ') || 'API keys'}.`,
+        );
+      } else if (error.provider || error.detail) {
+        setMoodieError(
+          `${error.message}${error.provider ? ` (${error.provider})` : ''}${error.detail ? `: ${error.detail}` : ''}`,
+        );
+      } else {
+        setMoodieError(error.message);
+      }
+    } finally {
+      setIsMoodieLoading(false);
+    }
+  }
+
   return (
     <main className="w-full">
       <section
         ref={mapSectionRef}
         className="mx-auto flex w-full max-w-[1520px] animate-[soft-page-in_280ms_ease-out_both] flex-col px-3 pb-8 pt-4 sm:px-5 lg:min-h-[calc(100vh-64px)] lg:px-8"
       >
-        <div className="mb-4 rounded-[28px] border border-[rgba(22,22,22,0.07)] bg-white/62 p-3 shadow-[0_12px_34px_rgba(22,22,22,0.06)] backdrop-blur">
-          <div className="grid gap-3 lg:grid-cols-[minmax(320px,520px)_minmax(0,1fr)] lg:items-center">
+        <div className="mb-4 rounded-[28px] border border-[rgba(22,22,22,0.07)] bg-white/68 px-4 py-4 shadow-[0_10px_28px_rgba(22,22,22,0.055)] backdrop-blur">
+          <div className="grid grid-cols-[minmax(0,1fr)_52px] items-center gap-x-3 gap-y-3 md:grid-cols-[minmax(300px,500px)_52px_minmax(320px,1fr)]">
             <SearchControls />
             <MoodFilterBar
               selectedMood={selectedMood}
@@ -316,9 +421,26 @@ export default function HomePage() {
             onLocationSelected={handleLocationSelect}
             refreshKey={routeCreatedPin?.id || 0}
             focusPin={routeCreatedPin}
+            aiPlaces={aiPlaces}
+            selectedAiPlace={selectedAiPlace}
+            onAiPlaceSelect={setSelectedAiPlace}
+            onCloseAiPlace={() => setSelectedAiPlace(null)}
+            onOpenMoodie={() => setIsMoodieOpen(true)}
+            isMoodieOpen={isMoodieOpen}
           />
         </div>
       </section>
+
+      {isMoodieOpen && (
+        <MoodInputModal
+          isOpen={isMoodieOpen}
+          onClose={() => setIsMoodieOpen(false)}
+          onSubmit={handleMoodieSubmit}
+        isLoading={isMoodieLoading}
+        error={moodieError}
+        successMessage={moodieSuccess}
+      />
+      )}
     </main>
   );
 }

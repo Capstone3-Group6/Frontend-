@@ -23,6 +23,9 @@ const moodData = {
   Inspiring: { label: 'Inspiring', face: '✨', color: '#8656D8' },
 };
 
+const fallbackPinImage =
+  'https://images.unsplash.com/photo-1522083165195-3424ed129620?auto=format&fit=crop&w=600&q=80';
+
 function createMoodIcon(mood) {
   const selectedMood = moodData[mood] || moodData.Happy;
 
@@ -46,6 +49,23 @@ function createMoodIcon(mood) {
     iconSize: [60, 75],
     iconAnchor: [30, 54],
     popupAnchor: [0, -52],
+  });
+}
+
+function createAiPlaceIcon(place) {
+  const mood = moodData[place.recommendedMood] || moodData.Happy;
+
+  return L.divIcon({
+    className: 'ai-place-marker-wrapper',
+    html: `
+      <div class="ai-place-marker">
+        <span class="ai-place-marker-face">${mood.face}</span>
+        <small>AI</small>
+      </div>
+    `,
+    iconSize: [48, 52],
+    iconAnchor: [24, 48],
+    popupAnchor: [0, -40],
   });
 }
 
@@ -182,6 +202,8 @@ export default function MoodMap({
   onLocationSelected,
   refreshKey = 0,
   focusPin = null,
+  aiPlaces = [],
+  onAiPlaceSelect,
 }) {
   const center = [40.7128, -74.006];
 
@@ -231,6 +253,8 @@ export default function MoodMap({
 
         {pins.map((pin) => {
           const mood = moodData[pin.mood] || moodData.Happy;
+          const pinImage =
+            pin.image || pin.photoPreview || pin.imageUrl || fallbackPinImage;
 
           return (
             <Marker
@@ -246,9 +270,12 @@ export default function MoodMap({
               >
                 <div className="mood-tooltip-card flex w-[230px] items-center gap-3 rounded-2xl bg-white p-2 shadow-[0_18px_42px_rgba(22,22,22,0.18)]">
                   <img
-                    src={pin.image}
+                    src={pinImage}
                     alt={pin.placeName}
                     className="h-14 w-16 rounded-xl object-cover"
+                    onError={(event) => {
+                      event.currentTarget.src = fallbackPinImage;
+                    }}
                   />
 
                   <div className="min-w-0">
@@ -275,9 +302,12 @@ export default function MoodMap({
               <Popup>
                 <div className="w-[240px]">
                   <img
-                    src={pin.image}
+                    src={pinImage}
                     alt={pin.placeName}
                     className="h-28 w-full rounded-xl object-cover"
+                    onError={(event) => {
+                      event.currentTarget.src = fallbackPinImage;
+                    }}
                   />
 
                   <div className="mt-3">
@@ -322,6 +352,35 @@ export default function MoodMap({
                   </div>
                 </div>
               </Popup>
+            </Marker>
+          );
+        })}
+
+        {aiPlaces.map((place, index) => {
+          const lat = Number(place.location?.latitude ?? place.lat);
+          const lng = Number(place.location?.longitude ?? place.lng);
+          const name = place.displayName?.text || place.name || 'Moodie place';
+
+          if (!Number.isFinite(lat) || !Number.isFinite(lng)) return null;
+
+          return (
+            <Marker
+              key={place.id || `${name}-${lat}-${lng}`}
+              position={[lat, lng]}
+              icon={createAiPlaceIcon(place)}
+              eventHandlers={{
+                click: () => onAiPlaceSelect?.(place),
+              }}
+            >
+              <Tooltip direction="top" offset={[0, -38]} opacity={1}>
+                <div className="ai-place-tooltip">
+                  <strong>{index + 1}. {name}</strong>
+                  {place.rating && (
+                    <em>★ {place.rating} {place.userRatingCount ? `(${place.userRatingCount})` : ''}</em>
+                  )}
+                  <span>✨ Moodie recommendation</span>
+                </div>
+              </Tooltip>
             </Marker>
           );
         })}

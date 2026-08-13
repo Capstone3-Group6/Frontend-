@@ -17,6 +17,7 @@ export default function CreatePinPanel({ location, onCreate, onCancel }) {
   const [notes, setNotes] = useState('');
   const [privacy, setPrivacy] = useState('Public');
   const [photoName, setPhotoName] = useState('');
+  const [photoPreview, setPhotoPreview] = useState('');
 
   // These fields hold only frontend form data.
   // The parent CreatePin page decides how to save the complete pin.
@@ -41,7 +42,28 @@ export default function CreatePinPanel({ location, onCreate, onCancel }) {
       mood,
       description: description.trim(),
       notes: notes.trim(),
+      image: photoPreview,
+      photoName,
+      privacy,
     });
+  }
+
+  function handlePhotoChange(event) {
+    const file = event.target.files?.[0];
+
+    if (!file) {
+      setPhotoName('');
+      setPhotoPreview('');
+      return;
+    }
+
+    setPhotoName(file.name);
+
+    const reader = new FileReader();
+    reader.onload = () => {
+      setPhotoPreview(typeof reader.result === 'string' ? reader.result : '');
+    };
+    reader.readAsDataURL(file);
   }
 
   // handleSubmit sends clean form values upward.
@@ -143,9 +165,7 @@ export default function CreatePinPanel({ location, onCreate, onCancel }) {
               type="file"
               accept="image/png,image/jpeg"
               className="sr-only"
-              onChange={(event) =>
-                setPhotoName(event.target.files?.[0]?.name || '')
-              }
+              onChange={handlePhotoChange}
             />
             <span className="mx-auto flex h-12 w-12 items-center justify-center rounded-2xl bg-[#F7F3EE] text-3xl transition duration-200 group-hover:scale-105 group-hover:bg-[#FFF1F2]">📷</span>
             <span className="mt-2 block text-sm font-black text-[#171326]">
@@ -225,8 +245,15 @@ export default function CreatePinPanel({ location, onCreate, onCancel }) {
           </p>
           <div className="group mt-4 overflow-hidden rounded-3xl bg-[#F8F6F3] shadow-[inset_0_0_0_1px_rgba(22,22,22,0.05)] transition duration-300 hover:shadow-[0_18px_42px_rgba(22,22,22,0.1)]">
           <img
-            src="https://images.unsplash.com/photo-1522083165195-3424ed129620?auto=format&fit=crop&w=700&q=80"
-            alt="Mood pin preview"
+            src={
+              photoPreview ||
+              'https://images.unsplash.com/photo-1522083165195-3424ed129620?auto=format&fit=crop&w=700&q=80'
+            }
+            alt={
+              photoPreview
+                ? `${placeName.trim() || 'Selected place'} preview`
+                : 'Mood pin preview'
+            }
             className="h-56 w-full object-cover transition duration-500 group-hover:scale-[1.025]"
           />
           <div className="p-4">

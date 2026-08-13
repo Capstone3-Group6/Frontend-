@@ -143,7 +143,7 @@ export default function Navbar({ user, onLogout }) {
           <NavItem to="/explore" icon="add" label="Add Mood" />
           {user ? (
             <>
-              <NavItem to="/protected" icon="profile" label="Profile" />
+              <NavItem to="/profile" icon="profile" label="Profile" />
               <IconButton icon="logout" label="Log out" onClick={onLogout} />
             </>
           ) : (

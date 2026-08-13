@@ -1,32 +1,98 @@
-const TEMP_PINS_KEY = 'mood-map-temp-pins';
+const BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:3000";
 
-// Temporary frontend storage for mood pins while the backend
-// GET /api/pins and POST /api/pins endpoints are still being built.
-//
-// Later:
-// - readTemporaryPins() should be replaced by GET /api/pins
-// - saveTemporaryPin() should be replaced by POST /api/pins
+// Get all mood pins
+export async function getPins() {
+  const res = await fetch(`${BASE_URL}/pins`, {
+    method: "GET",
+    credentials: "include",
+    headers: {
+      "Content-Type": "application/json",
+    },
+  });
 
-export function readTemporaryPins() {
-  try {
-    const savedPins = localStorage.getItem(TEMP_PINS_KEY);
+  if (!res.ok) {
+    const body = await res.json().catch(() => ({}));
 
-    // localStorage stores only strings, so saved pins must be parsed
-    // back into JavaScript objects before the map can render them.
-    return savedPins ? JSON.parse(savedPins) : [];
-  } catch (error) {
-    console.error('Could not read temporary pins:', error);
-    return [];
+    throw new Error(body.error || `Failed to get pins (${res.status})`);
   }
+
+  return res.json();
 }
 
-export function saveTemporaryPin(pin) {
-  const currentPins = readTemporaryPins();
-  const nextPins = [...currentPins, pin];
+// Get one mood pin
+export async function getPin(id) {
+  const res = await fetch(`${BASE_URL}/pins/${id}`, {
+    method: "GET",
+    credentials: "include",
+    headers: {
+      "Content-Type": "application/json",
+    },
+  });
 
-  // This keeps pins visible after navigating from /create-pin
-  // back to /explore, and even after a browser refresh during development.
-  localStorage.setItem(TEMP_PINS_KEY, JSON.stringify(nextPins));
+  if (!res.ok) {
+    const body = await res.json().catch(() => ({}));
 
-  return nextPins;
+    throw new Error(body.error || `Failed to get pin (${res.status})`);
+  }
+
+  return res.json();
+}
+
+// Create a mood pin
+export async function createPin(pin) {
+  const res = await fetch(`${BASE_URL}/pins`, {
+    method: "POST",
+    credentials: "include",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(pin),
+  });
+
+  if (!res.ok) {
+    const body = await res.json().catch(() => ({}));
+
+    throw new Error(body.error || `Failed to create pin (${res.status})`);
+  }
+
+  return res.json();
+}
+
+// Update a mood pin
+export async function updatePin(id, updates) {
+  const res = await fetch(`${BASE_URL}/pins/${id}`, {
+    method: "PATCH",
+    credentials: "include",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(updates),
+  });
+
+  if (!res.ok) {
+    const body = await res.json().catch(() => ({}));
+
+    throw new Error(body.error || `Failed to update pin (${res.status})`);
+  }
+
+  return res.json();
+}
+
+// Delete a mood pin
+export async function deletePin(id) {
+  const res = await fetch(`${BASE_URL}/pins/${id}`, {
+    method: "DELETE",
+    credentials: "include",
+    headers: {
+      "Content-Type": "application/json",
+    },
+  });
+
+  if (!res.ok) {
+    const body = await res.json().catch(() => ({}));
+
+    throw new Error(body.error || `Failed to delete pin (${res.status})`);
+  }
+
+  return res.json();
 }

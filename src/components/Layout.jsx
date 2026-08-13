@@ -2,7 +2,7 @@ import { Outlet } from "react-router";
 import Navbar from './Navbar';
  export default function Layout({user, onLogout, authError}){
   return (
-    <div className='min-h-screen bg-[var(--bg)] text-[var(--text)]'>
+    <div className='min-h-screen bg-[--bg)] text-(--text)'>
       <Navbar user={user} onLogout={onLogout}/>
       <main className='w-full'>
         {authError && (

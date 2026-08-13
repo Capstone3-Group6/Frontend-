@@ -1,3 +1,4 @@
+// Added by Musaddik
 // Moodie.jsx — Lottie-powered AI robot character with dynamic animations
 
 import { DotLottieReact } from '@lottiefiles/dotlottie-react';
@@ -31,31 +32,9 @@ export default function Moodie({ size = 'md', state = 'waving', style = {} }) {
         ...style,
       }}
     >
-      {/* Dynamic orbital loading dots (shown only in loading/searching state) */}
-      {isSearching && (
-        <>
-          {[
-            { color: '#C4B5FD', anim: 'orbit-1' },
-            { color: '#FDBA74', anim: 'orbit-2' },
-            { color: '#FCA5A5', anim: 'orbit-3' },
-          ].map((dot, i) => (
-            <div
-              key={i}
-              style={{
-                position: 'absolute',
-                top: '50%', left: '50%',
-                width: 9, height: 9,
-                marginTop: -4.5, marginLeft: -4.5,
-                borderRadius: '50%',
-                background: dot.color,
-                animation: `${dot.anim} 1.6s linear infinite`,
-                pointerEvents: 'none',
-              }}
-            />
-          ))}
-        </>
-      )}
-
+      {/* 
+        custom Lottie animation (LOADING_LOTTIE)
+      */}
       <DotLottieReact
         src={lottieSrc}
         loop

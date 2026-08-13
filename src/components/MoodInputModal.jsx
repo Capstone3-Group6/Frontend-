@@ -1,8 +1,11 @@
+// Added by Musaddik
 // MoodInputModal.jsx — Moodie's popup input with typewriter-effect library placeholder
 
 import { useState, useEffect, useRef } from 'react';
 import Typewriter from 'typewriter-effect';
+import { DotLottieReact } from '@lottiefiles/dotlottie-react';
 import Moodie from './Moodie';
+
 
 const MOOD_OPTIONS = [
   { label: '😊 Happy',     value: 'Happy',     bg: '#FDE68A' },
@@ -93,19 +96,17 @@ export default function MoodInputModal({ isOpen, onClose, onSubmit, isLoading })
               <p style={{ fontSize:'17px', fontWeight:700, color:'#3D2C1E', margin:'0 0 10px' }}>
                 Finding your vibe...
               </p>
-              <div style={{ display:'flex', justifyContent:'center', gap:'6px' }}>
-                {[0, 0.2, 0.4].map((delay, i) => (
-                  <div
-                    key={i}
-                    style={{
-                      width: 9, height: 9,
-                      borderRadius: '50%',
-                      background: '#C4B5FD',
-                      animation: `loading-dot 1.2s ease-in-out ${delay}s infinite`,
-                    }}
-                  />
-                ))}
+              {/* Added by Musaddik — Custom Lottie loading dots animation (enlarged) */}
+              <div style={{ display: 'flex', justifyContent: 'center', width: '100%', height: '60px' }}>
+                <DotLottieReact
+                  src="https://lottie.host/2fa18988-4345-4dd0-b0e3-41cc482ce382/Mpyg5UkRgb.lottie"
+                  loop
+                  autoplay
+                  style={{ width: '120px', height: '60px' }}
+                />
               </div>
+
+
             </div>
           </div>
         ) : (

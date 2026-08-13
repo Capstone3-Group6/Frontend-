@@ -547,13 +547,13 @@ export default function HomePage() {
             selectedPlace={selectedPlace}
           />
 
-          {/* Added by Musaddik — Floating place detail card overlay on map pin select */}
+          {/* Added by Musaddik — Floating place detail card overlay on map pin select (positioned right to avoid zoom buttons) */}
           {selectedAIPlace && !isLoading && (
             <div
               style={{
                 position: 'absolute',
                 top: '16px',
-                left: '16px',
+                right: '16px',
                 zIndex: 500,
               }}
             >
@@ -563,6 +563,7 @@ export default function HomePage() {
               />
             </div>
           )}
+
         </div>
       </div>
 

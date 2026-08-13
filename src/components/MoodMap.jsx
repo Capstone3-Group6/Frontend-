@@ -10,22 +10,16 @@ import {
 } from 'react-leaflet';
 
 // Added by Musaddik
-// Custom red pin generator for AI-generated recommendations
-const createRedAIPinIcon = () => {
-  return L.divIcon({
-    className: 'ai-marker-wrapper',
-    html: `
-      <div class="ai-marker-item" style="display: flex; flex-direction: column; align-items: center;">
-        <div class="ai-marker" style="background-color: #B4232C; width: 34px; height: 34px; border-radius: 50% 50% 50% 0; transform: rotate(-45deg); display: flex; align-items: center; justify-content: center; border: 2.5px solid #FFFDFC; box-shadow: 0 6px 16px rgba(180,35,44,0.3);">
-          <div style="transform: rotate(45deg); font-size: 13px; margin-bottom: 2px; color: white;">✨</div>
-        </div>
-      </div>
-    `,
-    iconSize: [34, 34],
-    iconAnchor: [17, 34],
-    popupAnchor: [0, -34],
-  });
-};
+// Standard Leaflet-style red pin icon using colored marker CDN
+const redLeafletIcon = L.icon({
+  iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-red.png',
+  shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png',
+  iconSize: [25, 41],
+  iconAnchor: [12, 41],
+  popupAnchor: [1, -34],
+  shadowSize: [41, 41]
+});
+
 
 const createMoodIcon = (mood) => {
   const moodData = {
@@ -211,7 +205,7 @@ export default function MoodMap({ aiPins = [], onSelectPlace, mapCenter = [40.71
           <Marker
             key={place.id}
             position={[place.location.latitude, place.location.longitude]}
-            icon={createRedAIPinIcon()}
+            icon={redLeafletIcon}
             eventHandlers={{
               click: () => {
                 if (onSelectPlace) onSelectPlace(place);
@@ -220,6 +214,7 @@ export default function MoodMap({ aiPins = [], onSelectPlace, mapCenter = [40.71
           />
         );
       })}
+
     </MapContainer>
   );
 }

@@ -1,19 +1,20 @@
-import { useEffect, useState } from 'react';
-import { Routes, Route } from 'react-router';
 import { useAuth0 } from '@auth0/auth0-react';
+import { useEffect, useState } from 'react';
+import { Route, Routes } from 'react-router';
 
+import { getMe, logoutRequest, syncUser } from './api/auth';
 import Layout from './components/Layout';
-import HomePage from './pages/HomePage';
-import TasksPage from './pages/TasksPage';
-import TaskDetailPage from './pages/TaskDetailPage';
-import NotFoundPage from './pages/NotFoundPage';
-import ProtectedPage from './pages/ProtectedPage';
 import ProtectedRoute from './components/ProtectedRoute';
 import Auth from './pages/Auth';
-import Explore from './pages/Explore';
 import CreatePin from './pages/CreatePin';
+import Explore from './pages/Explore';
+import HomePage from './pages/HomePage';
+import NotFoundPage from './pages/NotFoundPage';
+import ProtectedPage from './pages/ProtectedPage';
 import Saved from './pages/Saved';
-import { getMe, syncUser, logoutRequest } from './api/auth';
+import TaskDetailPage from './pages/TaskDetailPage';
+import TasksPage from './pages/TasksPage';
+import UserProfile from './pages/UserProfile';
 
 // App does two things:
 //   1. maps every URL to a page
@@ -157,6 +158,12 @@ function App() {
 
         <Route path='/tasks' element={<TasksPage />} />
         <Route path='/tasks/:id' element={<TaskDetailPage />} />
+        <Route path='/profile' element={
+            <ProtectedRoute user={user} isLoading={isLoading}>
+              <UserProfile user={user} />
+            </ProtectedRoute>
+          }
+        />
 
         {/* Only reachable when logged in — ProtectedRoute redirects otherwise. */}
         <Route

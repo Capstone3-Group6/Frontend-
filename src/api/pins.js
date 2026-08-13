@@ -1,4 +1,4 @@
-const TEMP_PINS_KEY = 'mood-map-temp-pins';
+const TEMP_PINS_KEY = "mood-map-temp-pins";
 
 // Temporary frontend storage for mood pins while the backend
 // GET /api/pins and POST /api/pins endpoints are still being built.
@@ -15,7 +15,7 @@ export function readTemporaryPins() {
     // back into JavaScript objects before the map can render them.
     return savedPins ? JSON.parse(savedPins) : [];
   } catch (error) {
-    console.error('Could not read temporary pins:', error);
+    console.error("Could not read temporary pins:", error);
     return [];
   }
 }
@@ -29,4 +29,18 @@ export function saveTemporaryPin(pin) {
   localStorage.setItem(TEMP_PINS_KEY, JSON.stringify(nextPins));
 
   return nextPins;
+}
+const BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:3000";
+
+export async function getMyPins() {
+  const response = await fetch(`${BASE_URL}/pins/me`, {
+    method: "GET",
+    credentials: "include",
+  });
+
+  if (!response.ok) {
+    throw new Error("Could not load your mood pins");
+  }
+
+  return response.json();
 }

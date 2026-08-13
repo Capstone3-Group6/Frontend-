@@ -405,14 +405,14 @@ export default function HomePage() {
               mapCenter={mapCenter}
             />
 
-            {/* Added by Musaddik — Floating Place Card overlay on top-right when AI pin selected */}
+            {/* Added by Musaddik — Floating Place Card overlay on bottom-left to avoid '+ Add Mood Pin' overlap */}
             {selectedAIPlace && !isLoading && (
               <div
                 style={{
                   position: 'absolute',
-                  top: '16px',
-                  right: '16px',
-                  zIndex: 500,
+                  bottom: '20px',
+                  left: '20px',
+                  zIndex: 1000,
                 }}
               >
                 <PlaceCard
@@ -421,6 +421,7 @@ export default function HomePage() {
                 />
               </div>
             )}
+
           </div>
         </div>
       </section>

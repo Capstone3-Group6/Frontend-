@@ -1,3 +1,7 @@
+import { Link } from "react-router";
+import { FaEdit } from "react-icons/fa";
+import { MdDelete } from "react-icons/md";
+
 export default function MoodPinCard({ pin }) {
   return (
     <article className="mood-pin-card">
@@ -20,7 +24,8 @@ export default function MoodPinCard({ pin }) {
           {pin.latitude}, {pin.longitude}
         </span>
       </div>
-
+<FaEdit/>
+<MdDelete />
     </article>
   );
 }

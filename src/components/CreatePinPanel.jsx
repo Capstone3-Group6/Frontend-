@@ -11,7 +11,7 @@ const moods = [
 ];
 
 export default function CreatePinPanel({ location, onCreate, onCancel }) {
-  const [placeName, setPlaceName] = useState('');
+  const [locationName, setLocationName] = useState('');
   const [mood, setMood] = useState('Calm');
   const [description, setDescription] = useState('');
   const [notes, setNotes] = useState('');
@@ -33,12 +33,12 @@ export default function CreatePinPanel({ location, onCreate, onCancel }) {
   function handleSubmit(event) {
     event.preventDefault();
 
-    if (!placeName.trim()) {
+    if (!locationName.trim()) {
       return;
     }
 
     onCreate({
-      placeName: placeName.trim(),
+      locationName: locationName.trim(),
       mood,
       description: description.trim(),
       notes: notes.trim(),
@@ -89,8 +89,8 @@ export default function CreatePinPanel({ location, onCreate, onCancel }) {
             <span className="text-sm font-bold text-[#171326]">Place Name</span>
             <input
               type="text"
-              value={placeName}
-              onChange={(event) => setPlaceName(event.target.value)}
+              value={locationName}
+              onChange={(event) => setLocationName(event.target.value)}
               placeholder="Example: Central Park"
               className="mt-2 min-h-[52px] w-full rounded-2xl border border-[#DDD8D2] bg-[#FFFDFC] px-4 py-3 text-[#171326] outline-none transition duration-200 group-hover:border-[#CFC7BE] group-hover:shadow-[0_10px_22px_rgba(22,22,22,0.045)] focus:border-[#B4232C] focus:shadow-[0_14px_30px_rgba(180,35,44,0.08)] focus:ring-4 focus:ring-[#F5DADB]"
             />
@@ -251,7 +251,7 @@ export default function CreatePinPanel({ location, onCreate, onCancel }) {
             }
             alt={
               photoPreview
-                ? `${placeName.trim() || 'Selected place'} preview`
+                ? `${locationName.trim() || 'Selected place'} preview`
                 : 'Mood pin preview'
             }
             className="h-56 w-full object-cover transition duration-500 group-hover:scale-[1.025]"
@@ -264,7 +264,7 @@ export default function CreatePinPanel({ location, onCreate, onCancel }) {
               {selectedMood.emoji} {selectedMood.name}
             </span>
             <h2 className="mt-3 text-xl font-black text-[#171326]">
-              {placeName.trim() || 'Your Mood Pin'}
+              {locationName.trim() || 'Your Mood Pin'}
             </h2>
             <p className="mt-2 text-sm leading-6 text-[#6F6A66]">
               {description.trim() ||

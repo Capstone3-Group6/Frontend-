@@ -1,70 +1,113 @@
-import { useEffect, useRef, useState } from 'react';
-import { useLocation, useNavigate } from 'react-router';
-import MoodMap from '../components/MoodMap';
+import { useEffect, useRef, useState } from "react";
+import { useLocation, useNavigate } from "react-router";
+import MoodMap from "../components/MoodMap";
+import { getPins } from "../api/pins";
 
 // Added by Musaddik — Moodie AI Assistant imports
-import { getRecommendations } from '../api/recommendations';
-import MoodieButton from '../components/MoodieButton';
-import MoodInputModal from '../components/MoodInputModal';
-import PlaceCard from '../components/PlaceCard';
+import { getRecommendations } from "../api/recommendations";
+import MoodieButton from "../components/MoodieButton";
+import MoodInputModal from "../components/MoodInputModal";
+import PlaceCard from "../components/PlaceCard";
 
-const DEFAULT_CENTER = [40.7128, -74.0060];
+const DEFAULT_CENTER = [40.7128, -74.006];
 
 const moods = [
-  { name: 'Calm', emoji: '😌', soft: '#E7F6FF', ink: '#2878C7', glow: 'rgba(40,120,199,0.22)' },
-  { name: 'Creative', emoji: '🎨', soft: '#F0E8FF', ink: '#7450D8', glow: 'rgba(116,80,216,0.24)' },
-  { name: 'Fun', emoji: '😄', soft: '#FFF3CF', ink: '#B77900', glow: 'rgba(183,121,0,0.22)' },
-  { name: 'Energetic', emoji: '⚡', soft: '#FFEAD6', ink: '#D96800', glow: 'rgba(217,104,0,0.24)' },
-  { name: 'Romantic', emoji: '❤️', soft: '#FFE4EC', ink: '#D83D66', glow: 'rgba(216,61,102,0.22)' },
-  { name: 'Focused', emoji: '🌿', soft: '#E4F8EA', ink: '#2C8F4C', glow: 'rgba(44,143,76,0.22)' },
-  { name: 'Inspiring', emoji: '✨', soft: '#F4ECFF', ink: '#8656D8', glow: 'rgba(134,86,216,0.23)' },
+  {
+    name: "Calm",
+    emoji: "😌",
+    soft: "#E7F6FF",
+    ink: "#2878C7",
+    glow: "rgba(40,120,199,0.22)",
+  },
+  {
+    name: "Creative",
+    emoji: "🎨",
+    soft: "#F0E8FF",
+    ink: "#7450D8",
+    glow: "rgba(116,80,216,0.24)",
+  },
+  {
+    name: "Fun",
+    emoji: "😄",
+    soft: "#FFF3CF",
+    ink: "#B77900",
+    glow: "rgba(183,121,0,0.22)",
+  },
+  {
+    name: "Energetic",
+    emoji: "⚡",
+    soft: "#FFEAD6",
+    ink: "#D96800",
+    glow: "rgba(217,104,0,0.24)",
+  },
+  {
+    name: "Romantic",
+    emoji: "❤️",
+    soft: "#FFE4EC",
+    ink: "#D83D66",
+    glow: "rgba(216,61,102,0.22)",
+  },
+  {
+    name: "Focused",
+    emoji: "🌿",
+    soft: "#E4F8EA",
+    ink: "#2C8F4C",
+    glow: "rgba(44,143,76,0.22)",
+  },
+  {
+    name: "Inspiring",
+    emoji: "✨",
+    soft: "#F4ECFF",
+    ink: "#8656D8",
+    glow: "rgba(134,86,216,0.23)",
+  },
 ];
 
 const places = [
   {
-    name: 'Columbia Park',
-    description: 'Open field energy, pickup games, and space to move.',
-    mood: '⚡ Energetic',
-    user: '@samiallo',
-    time: '2h ago',
+    name: "Columbia Park",
+    description: "Open field energy, pickup games, and space to move.",
+    mood: "⚡ Energetic",
+    user: "@samiallo",
+    time: "2h ago",
     image:
-      'https://images.unsplash.com/photo-1501594907352-04cda38ebc29?auto=format&fit=crop&w=600&q=80',
+      "https://images.unsplash.com/photo-1501594907352-04cda38ebc29?auto=format&fit=crop&w=600&q=80",
   },
   {
-    name: 'Mission Murals',
-    description: 'Color, culture, and creative energy on every block.',
-    mood: '🎨 Creative',
-    user: '@art.by.lei',
-    time: '4h ago',
+    name: "Mission Murals",
+    description: "Color, culture, and creative energy on every block.",
+    mood: "🎨 Creative",
+    user: "@art.by.lei",
+    time: "4h ago",
     image:
-      'https://images.unsplash.com/photo-1561214115-f2f134cc4912?auto=format&fit=crop&w=600&q=80',
+      "https://images.unsplash.com/photo-1561214115-f2f134cc4912?auto=format&fit=crop&w=600&q=80",
   },
   {
-    name: 'Dolores Park',
-    description: 'Sunny views, bright groups, and weekend joy.',
-    mood: '😄 Fun',
-    user: '@sunny.vibes',
-    time: '6h ago',
+    name: "Dolores Park",
+    description: "Sunny views, bright groups, and weekend joy.",
+    mood: "😄 Fun",
+    user: "@sunny.vibes",
+    time: "6h ago",
     image:
-      'https://images.unsplash.com/photo-1501785888041-af3ef285b470?auto=format&fit=crop&w=600&q=80',
+      "https://images.unsplash.com/photo-1501785888041-af3ef285b470?auto=format&fit=crop&w=600&q=80",
   },
   {
-    name: 'Garden Steps',
-    description: 'Quiet green corners for reading and resetting.',
-    mood: '🌿 Focused',
-    user: '@green.hour',
-    time: '8h ago',
+    name: "Garden Steps",
+    description: "Quiet green corners for reading and resetting.",
+    mood: "🌿 Focused",
+    user: "@green.hour",
+    time: "8h ago",
     image:
-      'https://images.unsplash.com/photo-1498855926480-d98e83099315?auto=format&fit=crop&w=600&q=80',
+      "https://images.unsplash.com/photo-1498855926480-d98e83099315?auto=format&fit=crop&w=600&q=80",
   },
   {
-    name: 'Sunset Pier',
-    description: 'Golden light and a quiet spark at the edge of the city.',
-    mood: '✨ Inspiring',
-    user: '@goldenhour',
-    time: '1d ago',
+    name: "Sunset Pier",
+    description: "Golden light and a quiet spark at the edge of the city.",
+    mood: "✨ Inspiring",
+    user: "@goldenhour",
+    time: "1d ago",
     image:
-      'https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=600&q=80',
+      "https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=600&q=80",
   },
 ];
 
@@ -146,18 +189,18 @@ function MoodFilterBar({ selectedMood, onSelectMood }) {
             <div key={mood.name} className="mood-orbit-wrap">
               <button
                 type="button"
-                onClick={() => onSelectMood(isSelected ? 'All' : mood.name)}
+                onClick={() => onSelectMood(isSelected ? "All" : mood.name)}
                 className="mood-orbit-button"
                 style={{
-                  background: isSelected ? mood.soft : '#FFFDFC',
-                  borderColor: isSelected ? mood.ink : 'rgba(22,22,22,0.08)',
+                  background: isSelected ? mood.soft : "#FFFDFC",
+                  borderColor: isSelected ? mood.ink : "rgba(22,22,22,0.08)",
                   color: mood.ink,
                   boxShadow: isSelected
                     ? `0 14px 30px ${mood.glow}`
                     : `0 9px 22px rgba(22,22,22,0.055)`,
-                  '--mood-glow': mood.glow,
-                  '--mood-ink': mood.ink,
-                  '--orbit-delay': `${index * -0.55}s`,
+                  "--mood-glow": mood.glow,
+                  "--mood-ink": mood.ink,
+                  "--orbit-delay": `${index * -0.55}s`,
                 }}
                 aria-label={mood.name}
                 aria-pressed={isSelected}
@@ -177,7 +220,7 @@ function MoodFilterBar({ selectedMood, onSelectMood }) {
 }
 
 function NearbyPlaceCard({ place }) {
-  const moodName = place.mood.replace(/^\S+\s/, '');
+  const moodName = place.mood.replace(/^\S+\s/, "");
   const mood = moods.find((item) => item.name === moodName) || moods[0];
 
   return (
@@ -224,6 +267,7 @@ function NearbyPlaceCard({ place }) {
 }
 
 function MapPanel({
+  pins,
   isAddingPin,
   onStartAddingPin,
   onLocationSelected,
@@ -237,6 +281,7 @@ function MapPanel({
   return (
     <div className="relative min-h-[440px] overflow-hidden rounded-[28px] border border-[#D9D4CE] bg-[#EDE7DF] shadow-[0_24px_58px_rgba(22,22,22,0.14)] transition duration-300 hover:shadow-[0_28px_66px_rgba(22,22,22,0.17)] sm:min-h-[500px] lg:h-full lg:min-h-[560px]">
       <MoodMap
+        pins={pins}
         isAddingPin={isAddingPin}
         onStartAddingPin={onStartAddingPin}
         onLocationSelected={onLocationSelected}
@@ -262,9 +307,10 @@ export default function HomePage() {
   const mapSectionRef = useRef(null);
 
   const [isAddingPin, setIsAddingPin] = useState(false);
-  const [selectedMood, setSelectedMood] = useState('All');
+  const [selectedMood, setSelectedMood] = useState("All");
+  const [pins, setPins] = useState([]);
   const visiblePlaces =
-    selectedMood === 'All'
+    selectedMood === "All"
       ? places
       : places.filter((place) => place.mood.includes(selectedMood));
 
@@ -278,14 +324,14 @@ export default function HomePage() {
   const [isMoodieOpen, setIsMoodieOpen] = useState(false);
 
   // Added by Musaddik — Sync user GPS coordinates on mount
-  useEffect(() => {
-    if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition(
-        (pos) => setMapCenter([pos.coords.latitude, pos.coords.longitude]),
-        (err) => console.warn('Geolocation unavailable, defaulting to NYC.', err)
-      );
-    }
-  }, []);
+  // useEffect(() => {
+  //   if (navigator.geolocation) {
+  //     navigator.geolocation.getCurrentPosition(
+  //       (pos) => setMapCenter([pos.coords.latitude, pos.coords.longitude]),
+  //       (err) => console.warn('Geolocation unavailable, defaulting to NYC.', err)
+  //     );
+  //   }
+  // }, []);
 
   // Added by Musaddik — Auto-close dialogue modal once recommendations load
   useEffect(() => {
@@ -297,17 +343,36 @@ export default function HomePage() {
   useEffect(() => {
     if (!routeCreatedPin) return;
 
-    mapSectionRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    mapSectionRef.current?.scrollIntoView({
+      behavior: "smooth",
+      block: "start",
+    });
   }, [routeCreatedPin]);
 
   function startAddingPin() {
     setIsAddingPin(true);
-    mapSectionRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    mapSectionRef.current?.scrollIntoView({
+      behavior: "smooth",
+      block: "start",
+    });
   }
+
+  useEffect(() => {
+    async function loadPins(){
+      try{
+        const data = await getPins();
+        setPins(data)
+      }catch(error){
+        console.error("Could not load pins", error);
+      }
+    }
+
+    loadPins();
+  }, [])
 
   function handleLocationSelect(location) {
     setIsAddingPin(false);
-    navigate('/create-pin', {
+    navigate("/create-pin", {
       state: location,
     });
   }
@@ -320,7 +385,11 @@ export default function HomePage() {
     setSelectedAIPlace(null);
 
     try {
-      const data = await getRecommendations(moodQuery, mapCenter[0], mapCenter[1]);
+      const data = await getRecommendations(
+        moodQuery,
+        mapCenter[1],
+        mapCenter[0],
+      );
       setRecommendations(data.recommendations || []);
       setKeywords(data.keywords || []);
 
@@ -329,7 +398,7 @@ export default function HomePage() {
         setMapCenter([first.location.latitude, first.location.longitude]);
       }
     } catch (err) {
-      setError(err.message || 'Failed to fetch recommendations.');
+      setError(err.message || "Failed to fetch recommendations.");
     } finally {
       setIsLoading(false);
     }
@@ -344,7 +413,9 @@ export default function HomePage() {
         {/* Added by Musaddik — Moodie Keywords Tags Banner */}
         {keywords.length > 0 && !isLoading && (
           <div className="mb-3 flex items-center gap-2 flex-wrap">
-            <span className="text-[11px] font-black text-[#6F6A66] uppercase tracking-wider">Moodie Keywords:</span>
+            <span className="text-[11px] font-black text-[#6F6A66] uppercase tracking-wider">
+              Moodie Keywords:
+            </span>
             {keywords.map((kw, i) => (
               <span
                 key={i}
@@ -394,6 +465,7 @@ export default function HomePage() {
           {/* Map Panel Integration */}
           <div className="relative h-full">
             <MapPanel
+              pins={pins}
               isAddingPin={isAddingPin}
               onStartAddingPin={startAddingPin}
               onLocationSelected={handleLocationSelect}
@@ -409,9 +481,9 @@ export default function HomePage() {
             {selectedAIPlace && !isLoading && (
               <div
                 style={{
-                  position: 'absolute',
-                  bottom: '20px',
-                  left: '20px',
+                  position: "absolute",
+                  bottom: "20px",
+                  left: "20px",
                   zIndex: 1000,
                 }}
               >
@@ -421,7 +493,6 @@ export default function HomePage() {
                 />
               </div>
             )}
-
           </div>
         </div>
       </section>

@@ -387,13 +387,17 @@ export default function HomePage() {
     try {
       const data = await getRecommendations(
         moodQuery,
-        mapCenter[1],
         mapCenter[0],
+        mapCenter[1],
       );
-      setRecommendations(data.recommendations || []);
+      const recsWithMood = (data.recommendations || []).map((place) => ({
+        ...place,
+        mood: moodQuery,
+      }));
+      setRecommendations(recsWithMood);
       setKeywords(data.keywords || []);
 
-      const first = data.recommendations?.[0];
+      const first = recsWithMood[0];
       if (first?.location?.latitude && first?.location?.longitude) {
         setMapCenter([first.location.latitude, first.location.longitude]);
       }
@@ -402,6 +406,7 @@ export default function HomePage() {
     } finally {
       setIsLoading(false);
     }
+
   };
 
   return (

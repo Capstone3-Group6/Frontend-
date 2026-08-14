@@ -1,32 +1,31 @@
-const TEMP_PINS_KEY = 'mood-map-temp-pins';
+const BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:3000";
 
-// Temporary frontend storage for mood pins while the backend
-// GET /api/pins and POST /api/pins endpoints are still being built.
-//
-// Later:
-// - readTemporaryPins() should be replaced by GET /api/pins
-// - saveTemporaryPin() should be replaced by POST /api/pins
+export async function createPin(pindata) {
+  const res = await fetch(`${BASE_URL}/pins`, {
+    method: "POST",
+    credentials: "include",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(pindata),
+  });
 
-export function readTemporaryPins() {
-  try {
-    const savedPins = localStorage.getItem(TEMP_PINS_KEY);
+  if (!res.ok) {
+    const body = await res.json().catch(() => {});
 
-    // localStorage stores only strings, so saved pins must be parsed
-    // back into JavaScript objects before the map can render them.
-    return savedPins ? JSON.parse(savedPins) : [];
-  } catch (error) {
-    console.error('Could not read temporary pins:', error);
-    return [];
+    throw new Error(body.Error || `Could not create pin (${res.status})`);
   }
+
+  return res.json();
 }
 
-export function saveTemporaryPin(pin) {
-  const currentPins = readTemporaryPins();
-  const nextPins = [...currentPins, pin];
+export async function getPins() {
+  const res = await fetch(`${BASE_URL}/pins`, {
+    credentials: "include",
+  });
 
-  // This keeps pins visible after navigating from /create-pin
-  // back to /explore, and even after a browser refresh during development.
-  localStorage.setItem(TEMP_PINS_KEY, JSON.stringify(nextPins));
+  if(!res.ok){
+    const body = await res.json.catch(() => {})
+    throw new Error(body.Error || `Failed to get pins (${res.status})`);
+  }
 
-  return nextPins;
+  return res.json();
 }

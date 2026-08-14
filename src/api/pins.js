@@ -1,3 +1,4 @@
+const TEMP_PINS_KEY = "mood-map-temp-pins";
 const BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:3000";
 
 export async function createPin(pindata) {
@@ -11,6 +12,12 @@ export async function createPin(pindata) {
   if (!res.ok) {
     const body = await res.json().catch(() => {});
 
+    // localStorage stores only strings, so saved pins must be parsed
+    // back into JavaScript objects before the map can render them.
+    return savedPins ? JSON.parse(savedPins) : [];
+  } catch (error) {
+    console.error("Could not read temporary pins:", error);
+    return [];
     throw new Error(body.Error || `Could not create pin (${res.status})`);
   }
 
@@ -28,4 +35,18 @@ export async function getPins() {
   }
 
   return res.json();
+}
+const BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:3000";
+
+export async function getMyPins() {
+  const response = await fetch(`${BASE_URL}/pins/me`, {
+    method: "GET",
+    credentials: "include",
+  });
+
+  if (!response.ok) {
+    throw new Error("Could not load your mood pins");
+  }
+
+  return response.json();
 }

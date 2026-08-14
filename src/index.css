@@ -1,4 +1,4 @@
-@import 'tailwindcss';
+@import "tailwindcss";
 @custom-variant hover (&:hover);
 :root {
   --text: #6f6a66;
@@ -20,16 +20,10 @@
   --accent-bg: rgba(180, 35, 44, 0.12);
 
   --shadow:
-    0 18px 50px rgba(22, 22, 22, 0.1),
-    0 4px 14px rgba(22, 22, 22, 0.06);
+    0 18px 50px rgba(22, 22, 22, 0.1), 0 4px 14px rgba(22, 22, 22, 0.06);
 
   --sans:
-    Inter,
-    system-ui,
-    -apple-system,
-    BlinkMacSystemFont,
-    'Segoe UI',
-    sans-serif;
+    Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
 
   font-family: var(--sans);
   color: var(--text);
@@ -54,11 +48,7 @@ body {
   min-width: 320px;
   min-height: 100vh;
   background:
-    radial-gradient(
-      circle at 12% 8%,
-      rgba(180, 35, 44, 0.04),
-      transparent 26%
-    ),
+    radial-gradient(circle at 12% 8%, rgba(180, 35, 44, 0.04), transparent 26%),
     radial-gradient(
       circle at 92% 10%,
       rgba(125, 24, 32, 0.03),
@@ -85,59 +75,106 @@ a {
 
 /* ─── Moodie design tokens ─────────────────────────── */
 :root {
-  --cream:        #FAF8F5;
-  --cream-card:   #FFFFFF;
-  --warm-border:  #EDE8E0;
-  --moodie-body:  #C4B5FD;
-  --moodie-dark:  #A78BFA;
-  --moodie-deep:  #7C3AED;
-  --moodie-peach: #FDBA74;
-  --moodie-pink:  #FCA5A5;
-  --warm-text:    #3D2C1E;
-  --muted-text:   #9C8B7A;
-  --pill-bg:      #F5F0FF;
+  --cream: #faf8f5;
+  --cream-card: #ffffff;
+  --warm-border: #ede8e0;
+  --moodie-body: #c4b5fd;
+  --moodie-dark: #a78bfa;
+  --moodie-deep: #7c3aed;
+  --moodie-peach: #fdba74;
+  --moodie-pink: #fca5a5;
+  --warm-text: #3d2c1e;
+  --muted-text: #9c8b7a;
+  --pill-bg: #f5f0ff;
 }
 
 /* ─── Moodie keyframe animations ───────────────────── */
 @keyframes moodie-wave {
-  0%, 100% { transform: rotate(-15deg); }
-  40%       { transform: rotate(30deg); }
-  70%       { transform: rotate(-5deg); }
+  0%,
+  100% {
+    transform: rotate(-15deg);
+  }
+  40% {
+    transform: rotate(30deg);
+  }
+  70% {
+    transform: rotate(-5deg);
+  }
 }
 
 @keyframes moodie-bounce {
-  0%, 100% { transform: translateY(0px); }
-  50%       { transform: translateY(-5px); }
+  0%,
+  100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-5px);
+  }
 }
 
 @keyframes moodie-loading-pulse {
-  0%, 100% { filter: drop-shadow(0 0 6px rgba(167,139,250,0.3)); }
-  50%       { filter: drop-shadow(0 0 22px rgba(167,139,250,0.85)); }
+  0%,
+  100% {
+    filter: drop-shadow(0 0 6px rgba(167, 139, 250, 0.3));
+  }
+  50% {
+    filter: drop-shadow(0 0 22px rgba(167, 139, 250, 0.85));
+  }
 }
 
 @keyframes loading-dot {
-  0%, 80%, 100% { transform: translateY(0);   opacity: 0.4; }
-  40%           { transform: translateY(-8px); opacity: 1;   }
+  0%,
+  80%,
+  100% {
+    transform: translateY(0);
+    opacity: 0.4;
+  }
+  40% {
+    transform: translateY(-8px);
+    opacity: 1;
+  }
 }
 
 @keyframes marquee-scroll {
-  0%   { transform: translateX(0); }
-  100% { transform: translateX(-50%); }
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
 }
 
 @keyframes modal-slide-up {
-  from { opacity: 0; transform: translateY(16px) scale(0.97); }
-  to   { opacity: 1; transform: translateY(0)     scale(1);    }
+  from {
+    opacity: 0;
+    transform: translateY(16px) scale(0.97);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
 }
 
 @keyframes card-pop-in {
-  from { opacity: 0; transform: translateY(8px); }
-  to   { opacity: 1; transform: translateY(0);   }
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 @keyframes bubble-pop {
-  from { opacity: 0; transform: scale(0.85) translateY(4px); }
-  to   { opacity: 1; transform: scale(1)    translateY(0);   }
+  from {
+    opacity: 0;
+    transform: scale(0.85) translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
 }
 
 /* ─── Moodie animation classes ─────────────────────── */
@@ -152,8 +189,9 @@ a {
 }
 
 .moodie-loading {
-  animation: moodie-bounce 0.9s ease-in-out infinite,
-             moodie-loading-pulse 1.4s ease-in-out infinite;
+  animation:
+    moodie-bounce 0.9s ease-in-out infinite,
+    moodie-loading-pulse 1.4s ease-in-out infinite;
 }
 
 .marquee-track {
@@ -164,42 +202,62 @@ a {
   will-change: transform;
 }
 
-.modal-enter  { animation: modal-slide-up 0.28s cubic-bezier(0.16,1,0.3,1); }
-.card-enter   { animation: card-pop-in   0.22s ease-out; }
-.bubble-enter { animation: bubble-pop    0.18s ease-out; }
+.modal-enter {
+  animation: modal-slide-up 0.28s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.card-enter {
+  animation: card-pop-in 0.22s ease-out;
+}
+.bubble-enter {
+  animation: bubble-pop 0.18s ease-out;
+}
 
 /* typewriter-effect library styles */
 .moodie-tw-wrapper {
-  color: #B0A090;
+  color: #b0a090;
   font-size: 14px;
   font-family: inherit;
 }
 .moodie-tw-cursor {
-  color: #C4B5FD;
+  color: #c4b5fd;
   font-weight: 300;
   animation: typewriter-blink 0.8s step-end infinite;
 }
 @keyframes typewriter-blink {
-  0%, 100% { opacity: 1; }
-  50%       { opacity: 0; }
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0;
+  }
 }
-
 
 /* Orbital loading dots */
 @keyframes orbit-1 {
-  from { transform: rotate(0deg)   translateX(42px); }
-  to   { transform: rotate(360deg) translateX(42px); }
+  from {
+    transform: rotate(0deg) translateX(42px);
+  }
+  to {
+    transform: rotate(360deg) translateX(42px);
+  }
 }
 @keyframes orbit-2 {
-  from { transform: rotate(120deg) translateX(42px); }
-  to   { transform: rotate(480deg) translateX(42px); }
+  from {
+    transform: rotate(120deg) translateX(42px);
+  }
+  to {
+    transform: rotate(480deg) translateX(42px);
+  }
 }
 @keyframes orbit-3 {
-  from { transform: rotate(240deg) translateX(42px); }
-  to   { transform: rotate(600deg) translateX(42px); }
+  from {
+    transform: rotate(240deg) translateX(42px);
+  }
+  to {
+    transform: rotate(600deg) translateX(42px);
+  }
 }
-
-
 
 #root {
   width: 100%;
@@ -323,7 +381,6 @@ a {
   We remove its default background and border.
 */
 
-
 .mood-marker {
   position: relative;
   width: 48px;
@@ -341,7 +398,8 @@ a {
   border: 4px solid var(--marker-color, #b4232c);
 
   box-shadow:
-    0 12px 24px color-mix(in srgb, var(--marker-color, #b4232c) 28%, transparent),
+    0 12px 24px
+      color-mix(in srgb, var(--marker-color, #b4232c) 28%, transparent),
     0 8px 20px rgba(22, 22, 22, 0.2),
     inset 0 0 0 3px rgba(255, 253, 252, 0.92);
 
@@ -372,13 +430,13 @@ a {
   = gives depth.
 */
 
-
 .mood-marker:hover {
   transform: rotate(-45deg) translateY(-3px) scale(1.15);
 
   box-shadow:
     0 0 0 8px color-mix(in srgb, var(--marker-color, #b4232c) 16%, transparent),
-    0 16px 34px color-mix(in srgb, var(--marker-color, #b4232c) 32%, transparent),
+    0 16px 34px
+      color-mix(in srgb, var(--marker-color, #b4232c) 32%, transparent),
     0 12px 28px rgba(22, 22, 22, 0.24),
     0 4px 8px rgba(22, 22, 22, 0.18);
 }
@@ -392,7 +450,6 @@ a {
   stronger shadow
   = marker feels lifted from the map.
 */
-
 
 .mood-face {
   position: relative;
@@ -418,7 +475,6 @@ a {
   to make the face straight again.
 */
 
-
 .mood-eye {
   position: absolute;
 
@@ -436,7 +492,6 @@ a {
   Creates the two eyes.
 */
 
-
 .mood-eye:first-child {
   left: 7px;
 }
@@ -445,7 +500,6 @@ a {
   Positions the left eye.
 */
 
-
 .mood-eye:nth-child(2) {
   right: 7px;
 }
@@ -453,7 +507,6 @@ a {
 /*
   Positions the right eye.
 */
-
 
 .mood-smile {
   position: absolute;
@@ -474,19 +527,18 @@ a {
 
   No system emoji is being used.
 */
-.mood-marker-item{
+.mood-marker-item {
   position: relative;
   display: flex;
   flex-direction: column;
   align-items: center;
 }
-.mood-marker-label{
+.mood-marker-label {
   position: absolute;
-  top:54px;
-  left:50%;
-  transform: translateX(-50%)
-            translateY(4px);
-            opacity: 0;
+  top: 54px;
+  left: 50%;
+  transform: translateX(-50%) translateY(4px);
+  opacity: 0;
   pointer-events: none;
   white-space: nowrap;
   padding: 5px 9px;
@@ -497,27 +549,23 @@ a {
   font-weight: 600;
   letter-spacing: 0.2px;
   box-shadow: 0 6px 16px rgba(22, 22, 22, 0.2);
-  transition: opacity 180ms ease,
-  transform 180ms ease;
+  transition:
+    opacity 180ms ease,
+    transform 180ms ease;
   z-index: 999;
-  
 }
 
 .mood-marker-wrapper:hover .mood-marker-label {
   opacity: 1;
-  transform: 
-  translateX(-50%)
-  translateY(8px);
+  transform: translateX(-50%) translateY(8px);
 }
-.mood-marker-wrapper:hover .mood-marker{
-  transform: 
-  rotate(-45deg)
-  translateY(-3px)
-  scale(1.12);
-  box-shadow: 
-  0 0 0 8px color-mix(in srgb, var(--marker-color, #b4232c) 15%, transparent),
-  0 14px 30px color-mix(in srgb, var(--marker-color, #b4232c) 32%, transparent),
-  0 5px 10px rgba(22,22,22,0.2);
+.mood-marker-wrapper:hover .mood-marker {
+  transform: rotate(-45deg) translateY(-3px) scale(1.12);
+  box-shadow:
+    0 0 0 8px color-mix(in srgb, var(--marker-color, #b4232c) 15%, transparent),
+    0 14px 30px
+      color-mix(in srgb, var(--marker-color, #b4232c) 32%, transparent),
+    0 5px 10px rgba(22, 22, 22, 0.2);
 }
 
 .mood-face-icon {
@@ -530,7 +578,7 @@ a {
 
   line-height: 1;
 }
- .leaflet-tooltip.mood-hover-tooltip {
+.leaflet-tooltip.mood-hover-tooltip {
   padding: 0;
   border: none;
   background: transparent;
@@ -624,19 +672,23 @@ a {
 }
 
 .mood-orbit-button::after {
-  content: '';
+  content: "";
   position: absolute;
   inset: 8px;
   border-radius: 999px;
-  background:
-    radial-gradient(circle, rgba(255, 253, 252, 0.96), rgba(255, 253, 252, 0.72));
+  background: radial-gradient(
+    circle,
+    rgba(255, 253, 252, 0.96),
+    rgba(255, 253, 252, 0.72)
+  );
   box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.72);
 }
 
 .mood-orbit-ring {
   position: absolute;
   inset: 4px;
-  border: 1px dashed color-mix(in srgb, var(--mood-ink, #b4232c) 32%, transparent);
+  border: 1px dashed
+    color-mix(in srgb, var(--mood-ink, #b4232c) 32%, transparent);
   border-radius: 999px;
   opacity: 0.5;
   animation: mood-ring-spin 7s linear infinite;
@@ -747,7 +799,11 @@ a {
   inset: 7%;
   border-radius: 999px;
   background:
-    radial-gradient(circle at 35% 30%, rgba(255, 253, 252, 0.95), transparent 26%),
+    radial-gradient(
+      circle at 35% 30%,
+      rgba(255, 253, 252, 0.95),
+      transparent 26%
+    ),
     linear-gradient(135deg, #fffdfc, #f5dadb 45%, #f59e0b);
   box-shadow:
     0 16px 32px rgba(180, 35, 44, 0.18),
@@ -893,7 +949,11 @@ a {
   border: 1px solid rgba(22, 22, 22, 0.08);
   border-radius: 26px;
   background:
-    radial-gradient(circle at 88% 8%, rgba(180, 35, 44, 0.055), transparent 28%),
+    radial-gradient(
+      circle at 88% 8%,
+      rgba(180, 35, 44, 0.055),
+      transparent 28%
+    ),
     #fffdfc;
   padding: 24px;
   box-shadow:
@@ -1080,7 +1140,8 @@ a {
 }
 
 .moodie-mood-grid button {
-  border: 1px solid color-mix(in srgb, var(--chip-ink, #b4232c) 18%, transparent);
+  border: 1px solid
+    color-mix(in srgb, var(--chip-ink, #b4232c) 18%, transparent);
   border-radius: 16px;
   background: var(--chip-bg, #f7f3ee);
   color: var(--chip-ink, #171326);
@@ -1441,5 +1502,267 @@ select:focus-visible {
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
+  }
+}
+
+.profile-page {
+  min-height: 100vh;
+  padding: 32px 48px 56px;
+  background: linear-gradient(180deg, #faf7f2 0%, #fffdf9 45%, #ffffff 100%);
+  color: #1f2937;
+}
+
+.profile-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 32px;
+
+  width: 100%;
+  padding: 28px 32px;
+
+  background: linear-gradient(
+    90deg,
+    rgba(255, 241, 220, 0.85),
+    rgba(250, 232, 255, 0.8),
+    rgba(232, 244, 255, 0.85)
+  );
+
+  border: 1px solid rgba(226, 232, 240, 0.9);
+  border-radius: 24px;
+
+  box-shadow: 0 10px 30px rgba(15, 23, 42, 0.06);
+}
+
+/* left area = avatar + info */
+.profile-header > .profile-avatar,
+.profile-header > .profile-info {
+  flex-shrink: 0;
+}
+
+.profile-avatar {
+  width: 110px;
+  height: 110px;
+
+  border-radius: 50%;
+  overflow: hidden;
+
+  border: 5px solid white;
+
+  box-shadow:
+    0 0 0 1px rgba(148, 163, 184, 0.25),
+    0 8px 20px rgba(15, 23, 42, 0.12);
+}
+
+.profile-avatar-image {
+  width: 100%;
+  height: 100%;
+
+  display: block;
+  object-fit: cover;
+}
+
+/* pull info close to avatar */
+.profile-info {
+  flex: 1;
+
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+
+  margin-left: -4px;
+}
+
+.profile-info h1 {
+  margin: 0 0 6px;
+
+  font-size: 30px;
+  font-weight: 700;
+  line-height: 1.1;
+
+  color: #172033;
+}
+
+.profile-email {
+  margin: 0 0 8px;
+
+  font-size: 15px;
+  color: #64748b;
+}
+
+.profile-bio,
+.profile-bio-empty {
+  margin: 0;
+
+  max-width: 520px;
+
+  font-size: 15px;
+  line-height: 1.6;
+}
+
+.profile-bio {
+  color: #334155;
+}
+
+.profile-bio-empty {
+  color: #94a3b8;
+  font-style: italic;
+}
+
+/* pin count on right */
+.profile-pin-count {
+  min-width: 120px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 18px 20px;
+  background: rgba(255, 255, 255, 0.72);
+  border: 1px solid rgba(226, 232, 240, 0.9);
+  border-radius: 18px;
+  box-shadow: 0 6px 18px rgba(15, 23, 42, 0.06);
+}
+
+.profile-pin-count strong {
+  order: 1;
+  margin-top: 4px;
+  font-size: 32px;
+  font-weight: 700;
+  line-height: 1;
+  color: #111827;
+}
+
+.profile-pin-count span {
+  order: 0;
+  margin: 0;
+  font-size: 13px;
+  font-weight: 500;
+  color: #64748b;
+}
+
+.profile-pins {
+  margin-top: 34px;
+}
+
+.profile-pins h2 {
+  margin: 0 0 16px;
+  font-size: 20px;
+  font-weight: 650;
+  color: #334155;
+}
+
+.profile-pins-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 18px;
+  width: 100%;
+}
+
+.mood-pin-card {
+  min-height: 220px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  padding: 18px;
+  background: rgba(255, 255, 255, 0.96);
+  border: 1px solid #e5e7eb;
+  border-radius: 18px;
+  box-sizing: border-box;
+
+  box-shadow:
+    0 5px 14px rgba(15, 23, 42, 0.05),
+    0 1px 3px rgba(15, 23, 42, 0.04);
+
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease,
+    border-color 0.2s ease;
+}
+
+.mood-pin-card:hover {
+  transform: translateY(-3px);
+  border-color: #ddd6fe;
+  box-shadow:
+    0 12px 24px rgba(15, 23, 42, 0.08),
+    0 2px 6px rgba(15, 23, 42, 0.05);
+}
+
+.mood-pin-mood {
+  display: inline-flex;
+  align-items: center;
+  width: fit-content;
+  margin-bottom: 12px;
+  padding: 6px 11px;
+  border-radius: 999px;
+  background: #f1eafe;
+  color: #7c3aed;
+  font-size: 13px;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.mood-pin-title {
+  margin: 0 0 8px;
+  font-size: 20px;
+  font-weight: 700;
+  line-height: 1.25;
+  color: #1f2937;
+}
+
+.mood-pin-description {
+  margin: 0 0 14px;
+  color: #64748b;
+  font-size: 14px;
+  line-height: 1.55;
+}
+
+.mood-pin-location {
+  margin-top: auto;
+  display: flex;
+  align-items: flex-start;
+  gap: 6px;
+  color: #94a3b8;
+  font-size: 12px;
+  line-height: 1.4;
+}
+
+
+
+@media (max-width: 1000px) {
+  .profile-pins-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .profile-header {
+    align-items: flex-start;
+  }
+}
+
+@media (max-width: 700px) {
+  .profile-page {
+    padding: 24px 18px 40px;
+  }
+
+  .profile-header {
+    flex-wrap: wrap;
+    padding: 22px;
+  }
+
+  .profile-avatar {
+    width: 90px;
+    height: 90px;
+  }
+
+  .profile-info {
+    min-width: 0;
+    flex: 1;
+  }
+
+  .profile-pin-count {
+    width: 100%;
+  }
+
+  .profile-pins-grid {
+    grid-template-columns: 1fr;
   }
 }

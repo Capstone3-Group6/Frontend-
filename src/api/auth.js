@@ -22,8 +22,7 @@
 
 // In dev this is your local Express server. In production, set VITE_API_URL to
 // your deployed backend URL. Vite only exposes env vars starting with VITE_.
-const BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000';
-
+const BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:3000";
 
 // ---------------------------------------------------------------------------
 // our own JWT (email + password)
@@ -35,11 +34,11 @@ const BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000';
 // you in. Returns the new user row.
 export async function signup(credentials) {
   const res = await fetch(`${BASE_URL}/auth/signup`, {
-    method: 'POST',
+    method: "POST",
     // Send/receive cookies. Off by default, and localhost:5173 -> localhost:8080
     // counts as a different origin, so without this the cookie never arrives.
-    credentials: 'include',
-    headers: { 'Content-Type': 'application/json' },
+    credentials: "include",
+    headers: { "Content-Type": "application/json" },
     // fetch will not turn an object into JSON for you.
     body: JSON.stringify(credentials),
   });
@@ -60,9 +59,9 @@ export async function signup(credentials) {
 // Returns the user row.
 export async function login(credentials) {
   const res = await fetch(`${BASE_URL}/auth/login`, {
-    method: 'POST',
-    credentials: 'include',
-    headers: { 'Content-Type': 'application/json' },
+    method: "POST",
+    credentials: "include",
+    headers: { "Content-Type": "application/json" },
     body: JSON.stringify(credentials),
   });
 
@@ -81,9 +80,9 @@ export async function login(credentials) {
 // logout().
 export async function logoutRequest() {
   const res = await fetch(`${BASE_URL}/auth/logout`, {
-    method: 'POST',
-    credentials: 'include',
-    headers: { 'Content-Type': 'application/json' },
+    method: "POST",
+    credentials: "include",
+    headers: { "Content-Type": "application/json" },
   });
 
   if (!res.ok) {
@@ -108,10 +107,10 @@ export async function logoutRequest() {
 // profile = { username }
 export async function syncUser(token, profile) {
   const res = await fetch(`${BASE_URL}/auth/auth0`, {
-    method: 'POST',
-    credentials: 'include',
+    method: "POST",
+    credentials: "include",
     headers: {
-      'Content-Type': 'application/json',
+      "Content-Type": "application/json",
       // The Auth0 token is not in a cookie, so we attach it by hand. "Bearer"
       // is just the standard word that goes before the token in this header.
       Authorization: `Bearer ${token}`,
@@ -138,13 +137,13 @@ export async function syncUser(token, profile) {
 //
 // A 401 from this endpoint is the normal "not logged in" answer, not a bug.
 export async function getMe(token) {
-  const headers = { 'Content-Type': 'application/json' };
+  const headers = { "Content-Type": "application/json" };
   if (token) {
     headers.Authorization = `Bearer ${token}`;
   }
 
   const res = await fetch(`${BASE_URL}/auth/me`, {
-    credentials: 'include',
+    credentials: "include",
     headers,
   });
 
@@ -159,13 +158,13 @@ export async function getMe(token) {
 // GET /api/protected — a tiny endpoint that just confirms auth works.
 // Handy for checking that login and the credential are wired up correctly.
 export async function getProtected(token) {
-  const headers = { 'Content-Type': 'application/json' };
+  const headers = { "Content-Type": "application/json" };
   if (token) {
     headers.Authorization = `Bearer ${token}`;
   }
 
   const res = await fetch(`${BASE_URL}/api/protected`, {
-    credentials: 'include',
+    credentials: "include",
     headers,
   });
 

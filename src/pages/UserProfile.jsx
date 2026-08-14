@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { getMyPins } from "../api/pins";
+import MoodPinCard from "../components/MoodPinCard";
 
 // rest of profile
 
@@ -53,14 +54,26 @@ export default function UserProfile({ user }) {
         <div className="profile-info">
           <h1>{user.userName}</h1>
 
-          <p>{user.email}</p>
+          <p className="profile-email">{user.email}</p>
           {user.bio ? (
             <p className="profile-bio">{user.bio}</p>
           ) : (
             <p className="profile-bio-empty">No bio yet</p>
           )}
+        </div>
 
-          <pre>{JSON.stringify(moodPins, null, 2)}</pre>
+        <div className="profile-pin-count">
+          <span>Total Pins</span>
+          <strong>{moodPins.length}</strong>
+        </div>
+      </section>
+      <section className="profile-pins">
+        <h2>My Mood Pins</h2>
+
+        <div className="profile-pins-grid">
+          {moodPins.map((pin) => (
+            <MoodPinCard key={pin.id} pin={pin} />
+          ))}
         </div>
       </section>
     </main>

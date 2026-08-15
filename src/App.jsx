@@ -1,20 +1,20 @@
-import { useAuth0 } from '@auth0/auth0-react';
-import { useEffect, useState } from 'react';
-import { Route, Routes } from 'react-router';
+import { useAuth0 } from "@auth0/auth0-react";
+import { useEffect, useState } from "react";
+import { Route, Routes } from "react-router";
 
-import { getMe, logoutRequest, syncUser } from './api/auth';
-import Layout from './components/Layout';
-import ProtectedRoute from './components/ProtectedRoute';
-import Auth from './pages/Auth';
-import CreatePin from './pages/CreatePin';
-import Explore from './pages/Explore';
-import HomePage from './pages/HomePage';
-import NotFoundPage from './pages/NotFoundPage';
-import ProtectedPage from './pages/ProtectedPage';
-import Saved from './pages/Saved';
-import TaskDetailPage from './pages/TaskDetailPage';
-import TasksPage from './pages/TasksPage';
-import UserProfile from './pages/UserProfile';
+import { getMe, logoutRequest, syncUser } from "./api/auth";
+import Layout from "./components/Layout";
+import ProtectedRoute from "./components/ProtectedRoute";
+import Auth from "./pages/Auth";
+import CreatePin from "./pages/CreatePin";
+import Explore from "./pages/Explore";
+import HomePage from "./pages/HomePage";
+import NotFoundPage from "./pages/NotFoundPage";
+import ProtectedPage from "./pages/ProtectedPage";
+import Saved from "./pages/Saved";
+import TaskDetailPage from "./pages/TaskDetailPage";
+import TasksPage from "./pages/TasksPage";
+import UserProfile from "./pages/UserProfile";
 
 // App does two things:
 //   1. maps every URL to a page
@@ -56,9 +56,7 @@ function App() {
   // below, there'd be a window where nothing is "loading" but nobody is logged
   // in either — and that window is exactly when the redirect fires.
   const isLoading =
-    isCheckingSession ||
-    isAuth0Loading ||
-    (isAuth0User && !user && !authError);
+    isCheckingSession || isAuth0Loading || (isAuth0User && !user && !authError);
 
   // ---------- 1. on page load: are we already logged in? ----------
   // Our JWT lives in an httpOnly cookie. That cookie survives a refresh, but
@@ -68,17 +66,19 @@ function App() {
   useEffect(() => {
     async function checkIfLoggedIn() {
       try {
-        const me = await getMe(); // no token argument -> the cookie is used
+        const me = await getMe();
         setUser(me);
       } catch {
-        setUser(null); // no cookie, or it expired
+        setUser(null);
       } finally {
         setIsCheckingSession(false);
       }
     }
 
-    checkIfLoggedIn();
-  }, []);
+    if (!isAuth0Loading) {
+      checkIfLoggedIn();
+    }
+  }, [isAuth0Loading]);
 
   // ---------- 2. after an Auth0 (OAuth) login ----------
   // Auth0 knows this person, but OUR database might not. POST /auth/auth0 runs
@@ -89,19 +89,23 @@ function App() {
 
     async function saveAuth0User() {
       try {
-        const token = await getAccessTokenSilently(); // Auth0's access token
+        console.log("Auth0 user:", auth0User);
+
+        const token = await getAccessTokenSilently();
+
+        console.log("Auth0 access token received:", Boolean(token));
+
         const dbUser = await syncUser(token, {
-          // Auth0 gives us a nickname; fall back to the email's local part.
-          // It's only a SUGGESTION — the backend adjusts it if that username
-          // is taken or too short, and tells us what it actually used.
-          username: auth0User.nickname || auth0User.email?.split('@')[0],
+          username: auth0User.nickname || auth0User.email?.split("@")[0],
         });
+
+        console.log("Database user from Auth0 sync:", dbUser);
+
         setUser(dbUser);
         setAuthError(null);
       } catch (error) {
-        // Auth0 thinks this person is logged in, but we have no row for them,
-        // so the rest of the app can't work. Show it — a console.error here
-        // just looks like a broken app that logs you out for no reason.
+        console.error("Auth0 sync failed:", error);
+
         setAuthError(
           `Signed in with Auth0, but we couldn't load your account: ${error.message}`,
         );
@@ -110,7 +114,6 @@ function App() {
 
     saveAuth0User();
   }, [isAuth0User, auth0User, getAccessTokenSilently]);
-
   // ---------- logging out ----------
   // We can't delete an httpOnly cookie from JavaScript, so logging out HAS to
   // be a request to the server. If the user came in through Auth0, we send
@@ -121,7 +124,7 @@ function App() {
     } catch (error) {
       // Even if the request fails, still drop the user locally — staying
       // "logged in" on screen after clicking Log out is the worse outcome.
-      console.error('Logout failed:', error.message);
+      console.error("Logout failed:", error.message);
     }
 
     setUser(null);
@@ -140,25 +143,27 @@ function App() {
           <Layout user={user} onLogout={handleLogout} authError={authError} />
         }
       >
-        <Route path='/' element={<HomePage />} />
+        <Route path="/" element={<HomePage />} />
 
         {/* Public on purpose: you can reach these while logged OUT.
             They get setUser so they can report a successful login back up. */}
-        <Route path='/explore' element={<Explore/>}/>
-        <Route path='/create-pin' element={<CreatePin />} />
-        <Route path='/saved' element={<Saved user={user} />} />
+        <Route path="/explore" element={<Explore />} />
+        <Route path="/create-pin" element={<CreatePin />} />
+        <Route path="/saved" element={<Saved user={user} />} />
         <Route
-          path='/login'
-          element={<Auth key='login' initialMode='login' setUser={setUser} />}
+          path="/login"
+          element={<Auth key="login" initialMode="login" setUser={setUser} />}
         />
         <Route
-          path='/signup'
-          element={<Auth key='signup' initialMode='signup' setUser={setUser} />}
+          path="/signup"
+          element={<Auth key="signup" initialMode="signup" setUser={setUser} />}
         />
 
-        <Route path='/tasks' element={<TasksPage />} />
-        <Route path='/tasks/:id' element={<TaskDetailPage />} />
-        <Route path='/profile' element={
+        <Route path="/tasks" element={<TasksPage />} />
+        <Route path="/tasks/:id" element={<TaskDetailPage />} />
+        <Route
+          path="/profile"
+          element={
             <ProtectedRoute user={user} isLoading={isLoading}>
               <UserProfile user={user} />
             </ProtectedRoute>
@@ -167,7 +172,7 @@ function App() {
 
         {/* Only reachable when logged in — ProtectedRoute redirects otherwise. */}
         <Route
-          path='/protected'
+          path="/protected"
           element={
             <ProtectedRoute user={user} isLoading={isLoading}>
               <ProtectedPage user={user} />
@@ -176,7 +181,7 @@ function App() {
         />
 
         {/* '*' matches anything no other route claimed. Keep it LAST. */}
-        <Route path='*' element={<NotFoundPage />} />
+        <Route path="*" element={<NotFoundPage />} />
       </Route>
     </Routes>
   );

@@ -1,44 +1,84 @@
-const BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:3000";
+const BASE_URL =
+  import.meta.env.VITE_API_URL || "http://localhost:3000";
 
-export async function createPin(pindata) {
+// POST /pins
+export async function createPin(pinData, token) {
+  const headers = {
+    "Content-Type": "application/json",
+  };
+
+  if (token) {
+    headers.Authorization = `Bearer ${token}`;
+  }
+
   const res = await fetch(`${BASE_URL}/pins`, {
     method: "POST",
     credentials: "include",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(pindata),
+    headers,
+    body: JSON.stringify(pinData),
   });
 
   if (!res.ok) {
     const body = await res.json().catch(() => ({}));
 
-    throw new Error(body.Error || `Failed to get pins(${res.status})`);
+    throw new Error(
+      body.error || `Failed to create pin (${res.status})`
+    );
   }
 
   return res.json();
 }
 
-export async function getPins() {
+// GET /pins
+export async function getPins(token) {
+  const headers = {
+    "Content-Type": "application/json",
+  };
+
+  if (token) {
+    headers.Authorization = `Bearer ${token}`;
+  }
+
   const res = await fetch(`${BASE_URL}/pins`, {
+    method: "GET",
     credentials: "include",
+    headers,
   });
 
   if (!res.ok) {
-    const body = await res.json.catch(() => {});
-    throw new Error(body.Error || `Failed to get pins (${res.status})`);
+    const body = await res.json().catch(() => ({}));
+
+    throw new Error(
+      body.error || `Failed to get pins (${res.status})`
+    );
   }
 
   return res.json();
 }
 
-//To get all the pins of that specifi users in profile page.
-export async function getMyPins() {
+// GET /pins/me
+export async function getMyPins(token) {
+  const headers = {
+    "Content-Type": "application/json",
+  };
+
+  if (token) {
+    headers.Authorization = `Bearer ${token}`;
+  }
+
   const response = await fetch(`${BASE_URL}/pins/me`, {
     method: "GET",
     credentials: "include",
+    headers,
   });
 
   if (!response.ok) {
-    throw new Error("Could not load your mood pins");
+    const body = await response.json().catch(() => ({}));
+
+    throw new Error(
+      body.error ||
+        `Could not load your mood pins (${response.status})`
+    );
   }
 
   return response.json();

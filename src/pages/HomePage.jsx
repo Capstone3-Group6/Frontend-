@@ -1,9 +1,11 @@
 import { useEffect, useRef, useState } from "react";
 import { useLocation, useNavigate } from "react-router";
+import { useAuth0 } from "@auth0/auth0-react";
+
 import MoodMap from "../components/MoodMap";
 import { getPins } from "../api/pins";
 
-// Added by Musaddik — Moodie AI Assistant imports
+// Moodie AI Assistant imports
 import { getRecommendations } from "../api/recommendations";
 import MoodieButton from "../components/MoodieButton";
 import MoodInputModal from "../components/MoodInputModal";
@@ -113,7 +115,12 @@ const places = [
 
 function SearchIcon() {
   return (
-    <svg viewBox="0 0 24 24" className="h-5 w-5" fill="none" aria-hidden="true">
+    <svg
+      viewBox="0 0 24 24"
+      className="h-5 w-5"
+      fill="none"
+      aria-hidden="true"
+    >
       <path
         d="m20 20-4.2-4.2m1.2-5.3a6.5 6.5 0 1 1-13 0 6.5 6.5 0 0 1 13 0Z"
         stroke="currentColor"
@@ -126,7 +133,12 @@ function SearchIcon() {
 
 function FilterIcon() {
   return (
-    <svg viewBox="0 0 24 24" className="h-5 w-5" fill="none" aria-hidden="true">
+    <svg
+      viewBox="0 0 24 24"
+      className="h-5 w-5"
+      fill="none"
+      aria-hidden="true"
+    >
       <path
         d="M5 7h14M8 12h8M10.5 17h3"
         stroke="currentColor"
@@ -139,7 +151,12 @@ function FilterIcon() {
 
 function SaveIcon() {
   return (
-    <svg viewBox="0 0 24 24" className="h-5 w-5" fill="none" aria-hidden="true">
+    <svg
+      viewBox="0 0 24 24"
+      className="h-5 w-5"
+      fill="none"
+      aria-hidden="true"
+    >
       <path
         d="M6.5 4.75h11v15l-5.5-3.15-5.5 3.15v-15Z"
         stroke="currentColor"
@@ -157,6 +174,7 @@ function SearchControls() {
         <span className="mr-2 flex h-8 w-8 items-center justify-center rounded-full bg-[#F7F3EE] text-[#161616] transition group-focus-within:text-[#B4232C]">
           <SearchIcon />
         </span>
+
         <input
           type="text"
           placeholder="Find a place that matches your mood"
@@ -170,6 +188,7 @@ function SearchControls() {
         aria-label="Filter"
       >
         <FilterIcon />
+
         <span className="pointer-events-none absolute left-1/2 top-[48px] z-50 -translate-x-1/2 translate-y-1 rounded-full bg-[#161616] px-2.5 py-1 text-xs font-bold text-[#FFFDFC] opacity-0 shadow-lg transition duration-200 group-hover:translate-y-0 group-hover:opacity-100">
           Filter
         </span>
@@ -189,11 +208,15 @@ function MoodFilterBar({ selectedMood, onSelectMood }) {
             <div key={mood.name} className="mood-orbit-wrap">
               <button
                 type="button"
-                onClick={() => onSelectMood(isSelected ? "All" : mood.name)}
+                onClick={() =>
+                  onSelectMood(isSelected ? "All" : mood.name)
+                }
                 className="mood-orbit-button"
                 style={{
                   background: isSelected ? mood.soft : "#FFFDFC",
-                  borderColor: isSelected ? mood.ink : "rgba(22,22,22,0.08)",
+                  borderColor: isSelected
+                    ? mood.ink
+                    : "rgba(22,22,22,0.08)",
                   color: mood.ink,
                   boxShadow: isSelected
                     ? `0 14px 30px ${mood.glow}`
@@ -206,10 +229,12 @@ function MoodFilterBar({ selectedMood, onSelectMood }) {
                 aria-pressed={isSelected}
               >
                 <span className="mood-orbit-ring" aria-hidden="true" />
+
                 <span className="mood-orbit-emoji" aria-hidden="true">
                   {mood.emoji}
                 </span>
               </button>
+
               <span className="mood-orbit-label">{mood.name}</span>
             </div>
           );
@@ -221,7 +246,9 @@ function MoodFilterBar({ selectedMood, onSelectMood }) {
 
 function NearbyPlaceCard({ place }) {
   const moodName = place.mood.replace(/^\S+\s/, "");
-  const mood = moods.find((item) => item.name === moodName) || moods[0];
+
+  const mood =
+    moods.find((item) => item.name === moodName) || moods[0];
 
   return (
     <article className="group flex cursor-pointer gap-3 rounded-3xl p-2.5 transition duration-200 hover:-translate-y-1 hover:bg-[#F7F3EE] hover:shadow-[0_14px_30px_rgba(22,22,22,0.09)]">
@@ -232,11 +259,13 @@ function NearbyPlaceCard({ place }) {
           className="h-full w-full object-cover transition-transform duration-200 group-hover:scale-[1.02]"
         />
       </div>
+
       <div className="min-w-0 flex-1">
         <div className="flex items-start justify-between gap-2">
           <h3 className="truncate text-sm font-black text-[#161616]">
             {place.name}
           </h3>
+
           <button
             className="cursor-pointer text-[#6F6A66] transition duration-200 hover:-translate-y-0.5 hover:scale-110 hover:text-[#B4232C]"
             aria-label={`Save ${place.name}`}
@@ -244,20 +273,27 @@ function NearbyPlaceCard({ place }) {
             <SaveIcon />
           </button>
         </div>
+
         <p className="mt-1 line-clamp-2 text-[13px] font-medium leading-5 text-[#6F6A66]">
           {place.description}
         </p>
+
         <div className="mt-2 flex items-center justify-between gap-2">
           <span
             className="rounded-full px-2.5 py-1 text-[11px] font-black"
-            style={{ background: mood.soft, color: mood.ink }}
+            style={{
+              background: mood.soft,
+              color: mood.ink,
+            }}
           >
             {place.mood}
           </span>
+
           <span className="shrink-0 text-[11px] font-bold text-[#6F6A66]">
             {place.time}
           </span>
         </div>
+
         <p className="mt-2 text-[11px] font-bold text-[#6F6A66]">
           {place.user}
         </p>
@@ -273,7 +309,6 @@ function MapPanel({
   onLocationSelected,
   refreshKey,
   focusPin,
-  // Added by Musaddik — AI recommendations props
   aiPins,
   onSelectPlace,
   mapCenter,
@@ -287,14 +322,17 @@ function MapPanel({
         onLocationSelected={onLocationSelected}
         refreshKey={refreshKey}
         focusPin={focusPin}
-        // Added by Musaddik — Pass AI recommendation states down to MoodMap
         aiPins={aiPins}
         onSelectPlace={onSelectPlace}
         mapCenter={mapCenter}
       />
+
       <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(180deg,rgba(247,243,238,0.18),transparent_30%,rgba(22,22,22,0.08))]" />
+
       <div className="absolute left-4 top-4 z-10 rounded-full border border-[#D9D4CE] bg-[#FFFDFC]/92 px-3 py-2 shadow-[0_12px_28px_rgba(22,22,22,0.10)] backdrop-blur">
-        <p className="text-xs font-black text-[#161616]">New York City, NY</p>
+        <p className="text-xs font-black text-[#161616]">
+          New York City, NY
+        </p>
       </div>
     </div>
   );
@@ -303,45 +341,129 @@ function MapPanel({
 export default function HomePage() {
   const routeLocation = useLocation();
   const navigate = useNavigate();
-  const routeCreatedPin = routeLocation.state?.createdPin || null;
+
+  // ---------------------------------------------------------
+  // AUTH0
+  // ---------------------------------------------------------
+
+  const {
+    isAuthenticated,
+    isLoading: isAuth0Loading,
+    getAccessTokenSilently,
+  } = useAuth0();
+
+  // ---------------------------------------------------------
+  // ROUTE STATE
+  // ---------------------------------------------------------
+
+  const routeCreatedPin =
+    routeLocation.state?.createdPin || null;
+
   const mapSectionRef = useRef(null);
+
+  // ---------------------------------------------------------
+  // MAP / PIN STATE
+  // ---------------------------------------------------------
 
   const [isAddingPin, setIsAddingPin] = useState(false);
   const [selectedMood, setSelectedMood] = useState("All");
   const [pins, setPins] = useState([]);
+
+  // ---------------------------------------------------------
+  // MOODIE AI STATE
+  // ---------------------------------------------------------
+
+  const [mapCenter, setMapCenter] =
+    useState(DEFAULT_CENTER);
+
+  const [recommendations, setRecommendations] =
+    useState([]);
+
+  const [keywords, setKeywords] = useState([]);
+
+  const [isLoading, setIsLoading] = useState(false);
+
+  const [error, setError] = useState(null);
+
+  const [selectedAIPlace, setSelectedAIPlace] =
+    useState(null);
+
+  const [isMoodieOpen, setIsMoodieOpen] =
+    useState(false);
+
+  // ---------------------------------------------------------
+  // FILTERED PLACES
+  // ---------------------------------------------------------
+
   const visiblePlaces =
     selectedMood === "All"
       ? places
-      : places.filter((place) => place.mood.includes(selectedMood));
+      : places.filter((place) =>
+          place.mood.includes(selectedMood)
+        );
 
-  // Added by Musaddik — Moodie AI states
-  const [mapCenter, setMapCenter] = useState(DEFAULT_CENTER);
-  const [recommendations, setRecommendations] = useState([]);
-  const [keywords, setKeywords] = useState([]);
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState(null);
-  const [selectedAIPlace, setSelectedAIPlace] = useState(null);
-  const [isMoodieOpen, setIsMoodieOpen] = useState(false);
-
-  // Added by Musaddik — Sync user GPS coordinates on mount
-  // useEffect(() => {
-  //   if (navigator.geolocation) {
-  //     navigator.geolocation.getCurrentPosition(
-  //       (pos) => setMapCenter([pos.coords.latitude, pos.coords.longitude]),
-  //       (err) => console.warn('Geolocation unavailable, defaulting to NYC.', err)
-  //     );
-  //   }
-  // }, []);
-
-  // Added by Musaddik — Auto-close dialogue modal once recommendations load
   useEffect(() => {
-    if (recommendations.length > 0 && !isLoading) {
+    async function loadPins() {
+      try {
+        // Don't try to request the token while Auth0
+        // is still figuring out the user's login state.
+        if (isAuth0Loading) {
+          return;
+        }
+
+        let token;
+
+        // Auth0 users need the Auth0 access token.
+        if (isAuthenticated) {
+          token = await getAccessTokenSilently();
+
+          console.log(
+            "Auth0 token received for /pins:",
+            Boolean(token)
+          );
+        }
+
+        const data = await getPins(token);
+
+        console.log("Pins loaded:", data);
+
+        setPins(data);
+      } catch (error) {
+        console.error(
+          "Could not load pins:",
+          error
+        );
+      }
+    }
+
+    loadPins();
+  }, [
+    isAuthenticated,
+    isAuth0Loading,
+    getAccessTokenSilently,
+  ]);
+
+  // ---------------------------------------------------------
+  // MOODIE MODAL
+  // ---------------------------------------------------------
+
+  useEffect(() => {
+    if (
+      recommendations.length > 0 &&
+      !isLoading
+    ) {
       setIsMoodieOpen(false);
     }
   }, [recommendations, isLoading]);
 
+  // ---------------------------------------------------------
+  // SCROLL TO CREATED PIN
+  // ---------------------------------------------------------
+
   useEffect(() => {
-    if (!routeCreatedPin) return;
+    if (!routeCreatedPin) {
+      return;
+    }
 
     mapSectionRef.current?.scrollIntoView({
       behavior: "smooth",
@@ -349,37 +471,42 @@ export default function HomePage() {
     });
   }, [routeCreatedPin]);
 
+  // ---------------------------------------------------------
+  // START ADDING PIN
+  // ---------------------------------------------------------
+
   function startAddingPin() {
     setIsAddingPin(true);
+
     mapSectionRef.current?.scrollIntoView({
       behavior: "smooth",
       block: "start",
     });
   }
 
-  useEffect(() => {
-    async function loadPins(){
-      try{
-        const data = await getPins();
-        setPins(data)
-      }catch(error){
-        console.error("Could not load pins", error);
-      }
-    }
-
-    loadPins();
-  }, [])
+  // ---------------------------------------------------------
+  // LOCATION SELECTED
+  // ---------------------------------------------------------
 
   function handleLocationSelect(location) {
     setIsAddingPin(false);
+
     navigate("/create-pin", {
       state: location,
     });
   }
 
-  // Added by Musaddik — recommendation fetch handler
-  const handleFetchRecommendations = async (moodQuery) => {
-    if (!moodQuery?.trim()) return;
+  // ---------------------------------------------------------
+  // MOODIE RECOMMENDATIONS
+  // ---------------------------------------------------------
+
+  const handleFetchRecommendations = async (
+    moodQuery
+  ) => {
+    if (!moodQuery?.trim()) {
+      return;
+    }
+
     setIsLoading(true);
     setError(null);
     setSelectedAIPlace(null);
@@ -388,60 +515,86 @@ export default function HomePage() {
       const data = await getRecommendations(
         moodQuery,
         mapCenter[0],
-        mapCenter[1],
+        mapCenter[1]
       );
-      const recsWithMood = (data.recommendations || []).map((place) => ({
-        ...place,
-        mood: moodQuery,
-      }));
+
+      const recsWithMood =
+        (data.recommendations || []).map(
+          (place) => ({
+            ...place,
+            mood: moodQuery,
+          })
+        );
+
       setRecommendations(recsWithMood);
+
       setKeywords(data.keywords || []);
 
       const first = recsWithMood[0];
-      if (first?.location?.latitude && first?.location?.longitude) {
-        setMapCenter([first.location.latitude, first.location.longitude]);
+
+      if (
+        first?.location?.latitude &&
+        first?.location?.longitude
+      ) {
+        setMapCenter([
+          first.location.latitude,
+          first.location.longitude,
+        ]);
       }
     } catch (err) {
-      setError(err.message || "Failed to fetch recommendations.");
+      setError(
+        err.message ||
+          "Failed to fetch recommendations."
+      );
     } finally {
       setIsLoading(false);
     }
-
   };
 
+  // ---------------------------------------------------------
+  // RENDER
+  // ---------------------------------------------------------
+
   return (
-    <main className="w-full relative">
+    <main className="relative w-full">
       <section
         ref={mapSectionRef}
         className="mx-auto flex w-full max-w-[1520px] animate-[soft-page-in_280ms_ease-out_both] flex-col px-3 pb-8 pt-4 sm:px-5 lg:min-h-[calc(100vh-64px)] lg:px-8"
       >
-        {/* Added by Musaddik — Moodie Keywords Tags Banner */}
-        {keywords.length > 0 && !isLoading && (
-          <div className="mb-3 flex items-center gap-2 flex-wrap">
-            <span className="text-[11px] font-black text-[#6F6A66] uppercase tracking-wider">
-              Moodie Keywords:
-            </span>
-            {keywords.map((kw, i) => (
-              <span
-                key={i}
-                className="bg-[#F5DADB] text-[#7D1820] text-xs font-bold px-2.5 py-1 rounded-full border border-[#E7BFC2]"
-              >
-                🔍 "{kw}"
-              </span>
-            ))}
-          </div>
-        )}
+        {/* Moodie Keywords */}
 
-        {/* Added by Musaddik — Error Boundary Banner */}
+        {keywords.length > 0 &&
+          !isLoading && (
+            <div className="mb-3 flex flex-wrap items-center gap-2">
+              <span className="text-[11px] font-black uppercase tracking-wider text-[#6F6A66]">
+                Moodie Keywords:
+              </span>
+
+              {keywords.map((kw, i) => (
+                <span
+                  key={i}
+                  className="rounded-full border border-[#E7BFC2] bg-[#F5DADB] px-2.5 py-1 text-xs font-bold text-[#7D1820]"
+                >
+                  🔍 "{kw}"
+                </span>
+              ))}
+            </div>
+          )}
+
+        {/* Error */}
+
         {error && (
-          <div className="mb-3 bg-red-50 text-red-700 text-xs font-semibold px-4 py-2 rounded-xl border border-red-200">
+          <div className="mb-3 rounded-xl border border-red-200 bg-red-50 px-4 py-2 text-xs font-semibold text-red-700">
             ⚠️ {error}
           </div>
         )}
 
+        {/* Search / Mood Filters */}
+
         <div className="mb-4 rounded-[28px] border border-[rgba(22,22,22,0.07)] bg-white/68 px-4 py-4 shadow-[0_10px_28px_rgba(22,22,22,0.055)] backdrop-blur">
           <div className="grid grid-cols-[minmax(0,1fr)_52px] items-center gap-x-3 gap-y-3 md:grid-cols-[minmax(300px,500px)_52px_minmax(320px,1fr)]">
             <SearchControls />
+
             <MoodFilterBar
               selectedMood={selectedMood}
               onSelectMood={setSelectedMood}
@@ -449,12 +602,17 @@ export default function HomePage() {
           </div>
         </div>
 
+        {/* Main Content */}
+
         <div className="grid flex-1 gap-4 lg:grid-cols-[380px_minmax(0,1fr)]">
+          {/* Nearby Pins */}
+
           <aside className="flex min-h-[340px] flex-col rounded-[28px] border border-[#D9D4CE] bg-[#FFFDFC] p-4 shadow-[0_18px_42px_rgba(22,22,22,0.08)] transition duration-300 hover:shadow-[0_22px_52px_rgba(22,22,22,0.1)] lg:max-h-[600px] lg:min-h-[560px]">
             <div className="mb-3 px-1">
               <h2 className="m-0 text-xl font-black tracking-normal text-[#161616]">
                 Nearby Mood Pins
               </h2>
+
               <p className="mt-0.5 text-sm font-semibold text-[#6F6A66]">
                 New York City area
               </p>
@@ -462,53 +620,73 @@ export default function HomePage() {
 
             <div className="min-h-0 flex-1 space-y-1 overflow-y-auto pr-1">
               {visiblePlaces.map((place) => (
-                <NearbyPlaceCard key={place.name} place={place} />
+                <NearbyPlaceCard
+                  key={place.name}
+                  place={place}
+                />
               ))}
             </div>
           </aside>
 
-          {/* Map Panel Integration */}
+          {/* Map */}
+
           <div className="relative h-full">
             <MapPanel
               pins={pins}
               isAddingPin={isAddingPin}
               onStartAddingPin={startAddingPin}
-              onLocationSelected={handleLocationSelect}
-              refreshKey={routeCreatedPin?.id || 0}
+              onLocationSelected={
+                handleLocationSelect
+              }
+              refreshKey={
+                routeCreatedPin?.id || 0
+              }
               focusPin={routeCreatedPin}
-              // Added by Musaddik — Pass AI state props
               aiPins={recommendations}
-              onSelectPlace={(place) => setSelectedAIPlace(place)}
+              onSelectPlace={(place) =>
+                setSelectedAIPlace(place)
+              }
               mapCenter={mapCenter}
             />
 
-            {/* Added by Musaddik — Floating Place Card overlay on bottom-left to avoid '+ Add Mood Pin' overlap */}
-            {selectedAIPlace && !isLoading && (
-              <div
-                style={{
-                  position: "absolute",
-                  bottom: "20px",
-                  left: "20px",
-                  zIndex: 1000,
-                }}
-              >
-                <PlaceCard
-                  place={selectedAIPlace}
-                  onClose={() => setSelectedAIPlace(null)}
-                />
-              </div>
-            )}
+            {/* AI Place Card */}
+
+            {selectedAIPlace &&
+              !isLoading && (
+                <div
+                  style={{
+                    position: "absolute",
+                    bottom: "20px",
+                    left: "20px",
+                    zIndex: 1000,
+                  }}
+                >
+                  <PlaceCard
+                    place={selectedAIPlace}
+                    onClose={() =>
+                      setSelectedAIPlace(null)
+                    }
+                  />
+                </div>
+              )}
           </div>
         </div>
       </section>
 
-      {/* Added by Musaddik — Floating corner Moodie action button */}
-      <MoodieButton onClick={() => setIsMoodieOpen(true)} />
+      {/* Moodie Button */}
 
-      {/* Added by Musaddik — Mood Input Modal */}
+      <MoodieButton
+        onClick={() => setIsMoodieOpen(true)}
+      />
+
+      {/* Moodie Modal */}
+
       <MoodInputModal
         isOpen={isMoodieOpen}
-        onClose={() => !isLoading && setIsMoodieOpen(false)}
+        onClose={() =>
+          !isLoading &&
+          setIsMoodieOpen(false)
+        }
         onSubmit={handleFetchRecommendations}
         isLoading={isLoading}
       />

@@ -9,9 +9,14 @@ export async function createPin(pindata) {
   });
 
   if (!res.ok) {
-    const body = await res.json().catch(() => {});
+    const body = await res.json().catch(() => ({}));
+
+    throw new Error(body.Error || `Failed to get pins(${res.status})`);
   }
+
+  return res.json();
 }
+
 export async function getPins() {
   const res = await fetch(`${BASE_URL}/pins`, {
     credentials: "include",

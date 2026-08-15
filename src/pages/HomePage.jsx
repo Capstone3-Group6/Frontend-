@@ -5,7 +5,6 @@ import { useAuth0 } from "@auth0/auth0-react";
 import MoodMap from "../components/MoodMap";
 import { getPins } from "../api/pins";
 
-// Moodie AI Assistant imports
 import { getRecommendations } from "../api/recommendations";
 import MoodieButton from "../components/MoodieButton";
 import MoodInputModal from "../components/MoodInputModal";
@@ -167,7 +166,7 @@ function SaveIcon() {
   );
 }
 
-function SearchControls() {
+function SearchControls({ onFilterClick }) {
   return (
     <>
       <label className="group flex h-[52px] min-w-0 items-center rounded-full border border-[rgba(22,22,22,0.08)] bg-[#FFFDFC] px-3 shadow-[0_8px_20px_rgba(22,22,22,0.055)] transition duration-200 focus-within:border-[rgba(180,35,44,0.35)] focus-within:shadow-[0_12px_28px_rgba(180,35,44,0.1)] focus-within:ring-4 focus-within:ring-[rgba(180,35,44,0.10)]">
@@ -184,6 +183,7 @@ function SearchControls() {
 
       <button
         type="button"
+        onClick={onFilterClick}
         className="group relative flex h-[52px] w-[52px] shrink-0 cursor-pointer items-center justify-center rounded-full border border-[rgba(22,22,22,0.08)] bg-[#FFFDFC] text-[#161616] shadow-[0_8px_20px_rgba(22,22,22,0.055)] transition duration-200 hover:-translate-y-1 hover:rotate-[-3deg] hover:scale-[1.08] hover:bg-[rgba(180,35,44,0.08)] hover:text-[#B4232C] hover:shadow-[0_14px_30px_rgba(180,35,44,0.12)] focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-[rgba(180,35,44,0.14)]"
         aria-label="Filter"
       >
@@ -229,7 +229,6 @@ function MoodFilterBar({ selectedMood, onSelectMood }) {
                 aria-pressed={isSelected}
               >
                 <span className="mood-orbit-ring" aria-hidden="true" />
-
                 <span className="mood-orbit-emoji" aria-hidden="true">
                   {mood.emoji}
                 </span>
@@ -267,6 +266,7 @@ function NearbyPlaceCard({ place }) {
           </h3>
 
           <button
+            type="button"
             className="cursor-pointer text-[#6F6A66] transition duration-200 hover:-translate-y-0.5 hover:scale-110 hover:text-[#B4232C]"
             aria-label={`Save ${place.name}`}
           >
@@ -342,36 +342,21 @@ export default function HomePage() {
   const routeLocation = useLocation();
   const navigate = useNavigate();
 
-  // ---------------------------------------------------------
-  // AUTH0
-  // ---------------------------------------------------------
-
   const {
     isAuthenticated,
     isLoading: isAuth0Loading,
     getAccessTokenSilently,
   } = useAuth0();
 
-  // ---------------------------------------------------------
-  // ROUTE STATE
-  // ---------------------------------------------------------
-
   const routeCreatedPin =
     routeLocation.state?.createdPin || null;
 
   const mapSectionRef = useRef(null);
 
-  // ---------------------------------------------------------
-  // MAP / PIN STATE
-  // ---------------------------------------------------------
-
   const [isAddingPin, setIsAddingPin] = useState(false);
   const [selectedMood, setSelectedMood] = useState("All");
   const [pins, setPins] = useState([]);
-
-  // ---------------------------------------------------------
-  // MOODIE AI STATE
-  // ---------------------------------------------------------
+  const [showFilters, setShowFilters] = useState(false);
 
   const [mapCenter, setMapCenter] =
     useState(DEFAULT_CENTER);
@@ -391,10 +376,6 @@ export default function HomePage() {
   const [isMoodieOpen, setIsMoodieOpen] =
     useState(false);
 
-  // ---------------------------------------------------------
-  // FILTERED PLACES
-  // ---------------------------------------------------------
-
   const visiblePlaces =
     selectedMood === "All"
       ? places
@@ -405,15 +386,12 @@ export default function HomePage() {
   useEffect(() => {
     async function loadPins() {
       try {
-        // Don't try to request the token while Auth0
-        // is still figuring out the user's login state.
         if (isAuth0Loading) {
           return;
         }
 
         let token;
 
-        // Auth0 users need the Auth0 access token.
         if (isAuthenticated) {
           token = await getAccessTokenSilently();
 
@@ -443,10 +421,6 @@ export default function HomePage() {
     getAccessTokenSilently,
   ]);
 
-  // ---------------------------------------------------------
-  // MOODIE MODAL
-  // ---------------------------------------------------------
-
   useEffect(() => {
     if (
       recommendations.length > 0 &&
@@ -455,10 +429,6 @@ export default function HomePage() {
       setIsMoodieOpen(false);
     }
   }, [recommendations, isLoading]);
-
-  // ---------------------------------------------------------
-  // SCROLL TO CREATED PIN
-  // ---------------------------------------------------------
 
   useEffect(() => {
     if (!routeCreatedPin) {
@@ -471,10 +441,6 @@ export default function HomePage() {
     });
   }, [routeCreatedPin]);
 
-  // ---------------------------------------------------------
-  // START ADDING PIN
-  // ---------------------------------------------------------
-
   function startAddingPin() {
     setIsAddingPin(true);
 
@@ -484,10 +450,6 @@ export default function HomePage() {
     });
   }
 
-  // ---------------------------------------------------------
-  // LOCATION SELECTED
-  // ---------------------------------------------------------
-
   function handleLocationSelect(location) {
     setIsAddingPin(false);
 
@@ -495,10 +457,6 @@ export default function HomePage() {
       state: location,
     });
   }
-
-  // ---------------------------------------------------------
-  // MOODIE RECOMMENDATIONS
-  // ---------------------------------------------------------
 
   const handleFetchRecommendations = async (
     moodQuery
@@ -551,18 +509,12 @@ export default function HomePage() {
     }
   };
 
-  // ---------------------------------------------------------
-  // RENDER
-  // ---------------------------------------------------------
-
   return (
     <main className="relative w-full">
       <section
         ref={mapSectionRef}
         className="mx-auto flex w-full max-w-[1520px] animate-[soft-page-in_280ms_ease-out_both] flex-col px-3 pb-8 pt-4 sm:px-5 lg:min-h-[calc(100vh-64px)] lg:px-8"
       >
-        {/* Moodie Keywords */}
-
         {keywords.length > 0 &&
           !isLoading && (
             <div className="mb-3 flex flex-wrap items-center gap-2">
@@ -581,32 +533,84 @@ export default function HomePage() {
             </div>
           )}
 
-        {/* Error */}
-
         {error && (
           <div className="mb-3 rounded-xl border border-red-200 bg-red-50 px-4 py-2 text-xs font-semibold text-red-700">
             ⚠️ {error}
           </div>
         )}
 
-        {/* Search / Mood Filters */}
-
-        <div className="mb-4 rounded-[28px] border border-[rgba(22,22,22,0.07)] bg-white/68 px-4 py-4 shadow-[0_10px_28px_rgba(22,22,22,0.055)] backdrop-blur">
+        <div className="relative z-[100] mb-4 rounded-[28px] border border-[rgba(22,22,22,0.07)] bg-white/68 px-4 py-4 shadow-[0_10px_28px_rgba(22,22,22,0.055)] backdrop-blur">
           <div className="grid grid-cols-[minmax(0,1fr)_52px] items-center gap-x-3 gap-y-3 md:grid-cols-[minmax(300px,500px)_52px_minmax(320px,1fr)]">
-            <SearchControls />
+            <SearchControls
+              onFilterClick={() =>
+                setShowFilters((prev) => !prev)
+              }
+            />
 
             <MoodFilterBar
               selectedMood={selectedMood}
               onSelectMood={setSelectedMood}
             />
           </div>
+
+          {showFilters && (
+            <div className="mt-3 rounded-2xl border border-[#D9D4CE] bg-[#FFFDFC] p-4 shadow-lg">
+              <div className="flex flex-wrap gap-2">
+                <button
+                  type="button"
+                  onClick={() =>
+                    setSelectedMood("All")
+                  }
+                  className={`rounded-full px-4 py-2 text-sm font-bold ${
+                    selectedMood === "All"
+                      ? "bg-[#161616] text-white"
+                      : "bg-[#F7F3EE] text-[#161616]"
+                  }`}
+                >
+                  All
+                </button>
+
+                {moods.map((mood) => (
+                  <button
+                    key={mood.name}
+                    type="button"
+                    onClick={() => {
+                      setSelectedMood(mood.name);
+                      setShowFilters(false);
+                    }}
+                    className="rounded-full px-4 py-2 text-sm font-bold transition hover:-translate-y-0.5"
+                    style={{
+                      background:
+                        selectedMood === mood.name
+                          ? mood.soft
+                          : "#F7F3EE",
+                      color: mood.ink,
+                      border:
+                        selectedMood === mood.name
+                          ? `2px solid ${mood.ink}`
+                          : "2px solid transparent",
+                    }}
+                  >
+                    {mood.emoji} {mood.name}
+                  </button>
+                ))}
+
+                <button
+                  type="button"
+                  onClick={() => {
+                    setSelectedMood("All");
+                    setShowFilters(false);
+                  }}
+                  className="rounded-full border-2 border-[#D9D4CE] px-4 py-2 text-sm font-bold text-[#161616] transition hover:bg-[#F7F3EE]"
+                >
+                  Show All
+                </button>
+              </div>
+            </div>
+          )}
         </div>
 
-        {/* Main Content */}
-
         <div className="grid flex-1 gap-4 lg:grid-cols-[380px_minmax(0,1fr)]">
-          {/* Nearby Pins */}
-
           <aside className="flex min-h-[340px] flex-col rounded-[28px] border border-[#D9D4CE] bg-[#FFFDFC] p-4 shadow-[0_18px_42px_rgba(22,22,22,0.08)] transition duration-300 hover:shadow-[0_22px_52px_rgba(22,22,22,0.1)] lg:max-h-[600px] lg:min-h-[560px]">
             <div className="mb-3 px-1">
               <h2 className="m-0 text-xl font-black tracking-normal text-[#161616]">
@@ -628,8 +632,6 @@ export default function HomePage() {
             </div>
           </aside>
 
-          {/* Map */}
-
           <div className="relative h-full">
             <MapPanel
               pins={pins}
@@ -648,8 +650,6 @@ export default function HomePage() {
               }
               mapCenter={mapCenter}
             />
-
-            {/* AI Place Card */}
 
             {selectedAIPlace &&
               !isLoading && (
@@ -673,13 +673,9 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* Moodie Button */}
-
       <MoodieButton
         onClick={() => setIsMoodieOpen(true)}
       />
-
-      {/* Moodie Modal */}
 
       <MoodInputModal
         isOpen={isMoodieOpen}

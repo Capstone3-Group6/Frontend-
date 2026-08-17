@@ -55,49 +55,22 @@ export default function CreatePin() {
 
   async function handleCreatePin(formData) {
     try {
-      const newPin = await createPin({
-        locationName: formData.locationName,
-        mood: formData.mood,
-        description: formData.description || formData.notes || "New Mood Pin",
-        latitude: selectedLocation.latitude,
-        longitude: selectedLocation.longitude,
-      });
-      // Make sure Auth0 has finished loading
       if (isAuth0Loading) {
         throw new Error("Authentication is still loading. Please try again.");
       }
 
-      // Make sure the user is logged into Auth0
-      if (!isAuthenticated) {
-        throw new Error("You must be logged in to create a mood pin.");
+      let token = null;
+
+      if (isAuthenticated) {
+        token = await getAccessTokenSilently();
       }
-
-      // ----------------------------------------------
-      // Get the Auth0 access token
-      // ----------------------------------------------
-
-      const token = await getAccessTokenSilently();
-
-      console.log("Access token received:", Boolean(token));
-
-      if (!token) {
-        throw new Error("Could not get Auth0 access token.");
-      }
-
-      // ----------------------------------------------
-      // Create the pin
-      // ----------------------------------------------
 
       const newPin = await createPin(
         {
           locationName: formData.locationName,
-
           mood: formData.mood,
-
           description: formData.description || formData.notes || "New Mood Pin",
-
           latitude: selectedLocation.latitude,
-
           longitude: selectedLocation.longitude,
         },
         token,
@@ -112,7 +85,6 @@ export default function CreatePin() {
       });
     } catch (error) {
       console.error("Could not create pin:", error);
-
       alert(error.message || "Could not create pin.");
     }
   }

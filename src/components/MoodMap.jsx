@@ -11,7 +11,6 @@ import {
 } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 
-// Added by Musaddik — Standard Leaflet-style red pin icon
 const redLeafletIcon = L.icon({
   iconUrl:
     "https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-red.png",
@@ -49,6 +48,7 @@ function createMoodIcon(mood) {
             ${selectedMood.face}
           </div>
         </div>
+
         <span class="mood-marker-label">
           ${selectedMood.label}
         </span>
@@ -79,19 +79,24 @@ function FocusCreatedPin({ pin }) {
   const map = useMap();
 
   useEffect(() => {
-    if (!Number.isFinite(pin?.latitude) || !Number.isFinite(pin?.longitude)) {
+    if (!Number.isFinite(Number(pin?.latitude)) ||
+        !Number.isFinite(Number(pin?.longitude))) {
       return;
     }
 
-    map.flyTo([pin.latitude, pin.longitude], Math.max(map.getZoom(), 15), {
-      duration: 0.8,
-    });
+    map.flyTo(
+      [Number(pin.latitude), Number(pin.longitude)],
+      Math.max(map.getZoom(), 15),
+      {
+        duration: 0.8,
+      }
+    );
   }, [map, pin]);
 
   return null;
 }
 
-// Added by Musaddik — RecenterMap hook
+// Recenter map when AI recommendations change the center
 function RecenterMap({ center }) {
   const map = useMap();
 
@@ -100,8 +105,8 @@ function RecenterMap({ center }) {
       center &&
       Array.isArray(center) &&
       center.length === 2 &&
-      Number.isFinite(center[0]) &&
-      Number.isFinite(center[1])
+      Number.isFinite(Number(center[0])) &&
+      Number.isFinite(Number(center[1]))
     ) {
       map.setView(center, map.getZoom(), {
         animate: true,
@@ -113,7 +118,7 @@ function RecenterMap({ center }) {
 }
 
 export default function MoodMap({
-  // NEW: real pins come from the parent
+  // Real database pins
   pins = [],
 
   isAddingPin = false,
@@ -122,7 +127,7 @@ export default function MoodMap({
   refreshKey = 0,
   focusPin = null,
 
-  // Partner's AI functionality stays
+  // Gemini AI functionality
   aiPins = [],
   aiPlaces = [],
   onSelectPlace,
@@ -165,25 +170,35 @@ export default function MoodMap({
 
         <FocusCreatedPin pin={focusPin} />
 
-        {/* REAL DATABASE PINS */}
+        {/* ============================= */}
+        {/* REAL DATABASE PINS             */}
+        {/* ============================= */}
+
         {pins
           .filter(
             (pin) =>
               Number.isFinite(Number(pin?.latitude)) &&
-              Number.isFinite(Number(pin?.longitude)),
+              Number.isFinite(Number(pin?.longitude))
           )
           .map((pin) => {
             const mood = moodData[pin.mood] || moodData.Happy;
 
             const pinImage =
-              pin.image || pin.photoPreview || pin.imageUrl || fallbackPinImage;
+              pin.image ||
+              pin.photoPreview ||
+              pin.imageUrl ||
+              fallbackPinImage;
 
             return (
               <Marker
                 key={pin.id}
-                position={[Number(pin.latitude), Number(pin.longitude)]}
+                position={[
+                  Number(pin.latitude),
+                  Number(pin.longitude),
+                ]}
                 icon={createMoodIcon(pin.mood)}
               >
+                {/* Hover information */}
                 <Tooltip
                   direction="top"
                   offset={[0, -45]}
@@ -193,7 +208,7 @@ export default function MoodMap({
                   <div className="mood-tooltip-card flex w-[230px] items-center gap-3 rounded-2xl bg-white p-2 shadow-[0_18px_42px_rgba(22,22,22,0.18)]">
                     <img
                       src={pinImage}
-                      alt={pin.placeName}
+                      alt={pin.locationName || "Mood pin"}
                       className="h-14 w-16 rounded-xl object-cover"
                       onError={(event) => {
                         event.currentTarget.src = fallbackPinImage;
@@ -202,8 +217,7 @@ export default function MoodMap({
 
                     <div className="min-w-0">
                       <p className="truncate text-sm font-bold text-[#161616]">
-                        {pin.placeName}
-                        
+                        {pin.locationName || "Unnamed place"}
                       </p>
 
                       <p className="mt-1 text-xs font-semibold text-[#B4232C]">
@@ -214,7 +228,7 @@ export default function MoodMap({
                         {pin.avatar && (
                           <img
                             src={pin.avatar}
-                            alt={pin.username}
+                            alt={pin.username || "User"}
                             className="h-5 w-5 rounded-full object-cover"
                           />
                         )}
@@ -227,11 +241,12 @@ export default function MoodMap({
                   </div>
                 </Tooltip>
 
+                {/* Click popup */}
                 <Popup>
                   <div className="w-[240px]">
                     <img
                       src={pinImage}
-                      alt={pin.placeName}
+                      alt={pin.locationName || "Mood pin"}
                       className="h-28 w-full rounded-xl object-cover"
                       onError={(event) => {
                         event.currentTarget.src = fallbackPinImage;
@@ -246,8 +261,7 @@ export default function MoodMap({
                           </span>
 
                           <h3 className="mt-2 text-base font-bold text-[#161616]">
-                            {pin.locationName}
-                            
+                            {pin.locationName || "Unnamed place"}
                           </h3>
                         </div>
 
@@ -268,7 +282,7 @@ export default function MoodMap({
                           {pin.avatar && (
                             <img
                               src={pin.avatar}
-                              alt={pin.username}
+                              alt={pin.username || "User"}
                               className="h-7 w-7 shrink-0 rounded-full object-cover"
                             />
                           )}
@@ -289,13 +303,23 @@ export default function MoodMap({
             );
           })}
 
-        {/* Added by Musaddik — AI recommended locations */}
+        {/* ============================= */}
+        {/* AI RECOMMENDED LOCATIONS       */}
+        {/* ============================= */}
+
         {effectiveAiPins.map((place, index) => {
-          const lat = Number(place.location?.latitude ?? place.lat);
+          const lat = Number(
+            place.location?.latitude ?? place.lat
+          );
 
-          const lng = Number(place.location?.longitude ?? place.lng);
+          const lng = Number(
+            place.location?.longitude ?? place.lng
+          );
 
-          const name = place.displayName?.text || place.name || "Moodie place";
+          const name =
+            place.displayName?.text ||
+            place.name ||
+            "Moodie place";
 
           if (!Number.isFinite(lat) || !Number.isFinite(lng)) {
             return null;
@@ -318,7 +342,11 @@ export default function MoodMap({
                 },
               }}
             >
-              <Tooltip direction="top" offset={[0, -38]} opacity={1}>
+              <Tooltip
+                direction="top"
+                offset={[0, -38]}
+                opacity={1}
+              >
                 <div className="ai-place-tooltip">
                   <strong>
                     {index + 1}. {name}
@@ -341,6 +369,7 @@ export default function MoodMap({
         })}
       </MapContainer>
 
+      {/* Add Mood Pin button */}
       <button
         type="button"
         onClick={onStartAddingPin}
@@ -349,6 +378,7 @@ export default function MoodMap({
         + Add Mood Pin
       </button>
 
+      {/* Location selection message */}
       {isAddingPin && (
         <div className="location-pick-pill absolute left-1/2 top-20 z-[1000] w-[min(92%,390px)] -translate-x-1/2 rounded-full bg-[#161616] px-5 py-3 text-center text-sm font-bold text-white shadow-[0_18px_40px_rgba(22,22,22,0.26)] sm:top-5">
           📍 Click anywhere on the map to choose a location

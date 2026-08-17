@@ -122,7 +122,7 @@ export default function Auth({ setUser, initialMode = 'login' }) {
   const navigate = useNavigate();
   const location = useLocation();
   const { loginWithRedirect } = useAuth0();
-  const redirectTo = location.state?.from ?? '/';
+  const redirectTo = location.state?.from ?? '/explore';
 
   const [authMode, setAuthMode] = useState(initialMode);
   const [isLoading, setIsLoading] = useState(false);

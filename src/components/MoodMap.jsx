@@ -203,6 +203,7 @@ export default function MoodMap({
                     <div className="min-w-0">
                       <p className="truncate text-sm font-bold text-[#161616]">
                         {pin.placeName}
+                        
                       </p>
 
                       <p className="mt-1 text-xs font-semibold text-[#B4232C]">
@@ -245,7 +246,8 @@ export default function MoodMap({
                           </span>
 
                           <h3 className="mt-2 text-base font-bold text-[#161616]">
-                            {pin.placeName}
+                            {pin.locationName}
+                            
                           </h3>
                         </div>
 

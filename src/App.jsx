@@ -15,6 +15,7 @@ import Saved from './pages/Saved';
 import TaskDetailPage from './pages/TaskDetailPage';
 import TasksPage from './pages/TasksPage';
 import UserProfile from './pages/UserProfile';
+import EditPin from './pages/EditPin'
 
 // App does two things:
 //   1. maps every URL to a page
@@ -147,6 +148,13 @@ function App() {
         <Route path='/explore' element={<Explore/>}/>
         <Route path='/create-pin' element={<CreatePin />} />
         <Route path='/saved' element={<Saved user={user} />} />
+        {/* <Route path='/pins/:id/edit' element={<EditPin />} /> */}
+        <Route path='/pins/:id/edit' element={
+            <ProtectedRoute user={user} isLoading={isLoading}>
+              <EditPin user={user} />
+            </ProtectedRoute>
+          }
+        />
         <Route
           path='/login'
           element={<Auth key='login' initialMode='login' setUser={setUser} />}

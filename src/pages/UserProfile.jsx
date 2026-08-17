@@ -1,10 +1,12 @@
 import { useEffect, useState } from "react";
-import { getMyPins } from "../api/pins";
+import { useNavigate } from "react-router";
+import { getMyPins, deletePin } from "../api/pins";
 import MoodPinCard from "../components/MoodPinCard";
 
 // rest of profile
 
 export default function UserProfile({ user }) {
+  const navigate = useNavigate();
   const [moodPins, setMoodPins] = useState([]);
   const [pinsLoading, setPinsLoading] = useState(true);
   const [pinsError, setPinsError] = useState(null);
@@ -40,6 +42,25 @@ export default function UserProfile({ user }) {
     loadMyPins();
   }, []);
 
+  async function handleDeletePin(id) {
+    const confirmed = window.confirm(
+      "Are you sure you want to delete this Mood Pin?",
+    );
+
+    if (!confirmed) {
+      return;
+    }
+
+    try {
+      await deletePin(id);
+      setMoodPins((currentPins) =>
+        currentPins.filter((pin) => String(pin.id) !== String(id)),
+      );
+    } catch (error) {
+      console.error("Failed to delete pin:", error);
+    }
+  }
+
   return (
     <main className="profile-page">
       <section className="profile-header">
@@ -72,7 +93,7 @@ export default function UserProfile({ user }) {
 
         <div className="profile-pins-grid">
           {moodPins.map((pin) => (
-            <MoodPinCard key={pin.id} pin={pin} />
+            <MoodPinCard key={pin.id} pin={pin} onDelete={handleDeletePin} />
           ))}
         </div>
       </section>

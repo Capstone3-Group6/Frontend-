@@ -39,8 +39,7 @@ export default function CreatePin() {
       const newPin = await createPin({
         locationName: formData.locationName,
         mood: formData.mood,
-        description:
-          formData.description || formData.notes || "New Mood Pin",
+        description: formData.description || formData.notes || "New Mood Pin",
         latitude: selectedLocation.latitude,
         longitude: selectedLocation.longitude,
       });
@@ -63,7 +62,7 @@ export default function CreatePin() {
     <section className="mx-auto w-full max-w-[1500px] px-4 py-6 sm:px-6">
       <CreatePinPanel
         location={selectedLocation}
-        onCreate={handleCreatePin}
+        onSubmit={handleCreatePin}
         onCancel={handleCancelPin}
       />
     </section>

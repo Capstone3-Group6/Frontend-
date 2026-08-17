@@ -1766,3 +1766,36 @@ select:focus-visible {
     grid-template-columns: 1fr;
   }
 }
+
+.mood-pin-card {
+  position: relative;
+}
+
+.edit-icon,
+.delete-icon {
+  position: absolute;
+  top: 16px;
+  font-size: 20px;
+  color: #7c3aed;
+  cursor: pointer;
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.edit-icon {
+  right: 50px;
+}
+
+.delete-icon {
+  right: 16px;
+}
+
+.edit-icon:hover {
+  color: #58a9a1;
+  transform: scale(1.15);
+}
+
+.delete-icon:hover {
+  color: #dc2626;
+  transform: scale(1.15);
+}

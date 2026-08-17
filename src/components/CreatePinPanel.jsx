@@ -10,7 +10,7 @@ const moods = [
   { name: 'Inspiring', emoji: '✨', soft: '#F4ECFF', ink: '#8656D8', glow: 'rgba(134,86,216,0.2)' },
 ];
 
-export default function CreatePinPanel({ location, onCreate, onCancel }) {
+export default function CreatePinPanel({ location, onSubmit, onCancel }) {
   const [locationName, setLocationName] = useState('');
   const [mood, setMood] = useState('Calm');
   const [description, setDescription] = useState('');
@@ -37,7 +37,7 @@ export default function CreatePinPanel({ location, onCreate, onCancel }) {
       return;
     }
 
-    onCreate({
+    onSubmit({
       locationName: locationName.trim(),
       mood,
       description: description.trim(),

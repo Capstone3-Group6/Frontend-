@@ -31,3 +31,27 @@ export async function getRecommendations(mood, latitude, longitude) {
 
   return res.json();
 }
+
+/**
+ * Asks Moodie a follow-up question about a specific place.
+ * @param {string} placeName - Name of the place.
+ * @param {string} address - Address of the place.
+ * @param {string} question - Question to ask Moodie.
+ * @param {string} [mood] - Current mood.
+ * @returns {Promise<{ answer: string }>}
+ */
+export async function askAboutPlace(placeName, address, question, mood) {
+  const res = await fetch(`${BASE_URL}/api/recommendations/follow-up`, {
+    method: 'POST',
+    credentials: 'include',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ placeName, address, question, mood }),
+  });
+
+  if (!res.ok) {
+    const body = await res.json().catch(() => ({}));
+    throw new Error(body.error || `Could not get place details (${res.status})`);
+  }
+
+  return res.json();
+}

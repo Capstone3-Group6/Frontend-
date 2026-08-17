@@ -1,20 +1,21 @@
-import { useAuth0 } from "@auth0/auth0-react";
-import { useEffect, useState } from "react";
-import { Route, Routes } from "react-router";
+import { useAuth0 } from '@auth0/auth0-react';
+import { useEffect, useState } from 'react';
+import { Route, Routes } from 'react-router';
 
-import { getMe, logoutRequest, syncUser } from "./api/auth";
-import Layout from "./components/Layout";
-import ProtectedRoute from "./components/ProtectedRoute";
-import Auth from "./pages/Auth";
-import CreatePin from "./pages/CreatePin";
-import Explore from "./pages/Explore";
-import HomePage from "./pages/HomePage";
-import NotFoundPage from "./pages/NotFoundPage";
-import ProtectedPage from "./pages/ProtectedPage";
-import Saved from "./pages/Saved";
-import TaskDetailPage from "./pages/TaskDetailPage";
-import TasksPage from "./pages/TasksPage";
-import UserProfile from "./pages/UserProfile";
+import { getMe, logoutRequest, syncUser } from './api/auth';
+import Layout from './components/Layout';
+import ProtectedRoute from './components/ProtectedRoute';
+import Auth from './pages/Auth';
+import CreatePin from './pages/CreatePin';
+import Explore from './pages/Explore';
+import HomePage from './pages/HomePage';
+import NotFoundPage from './pages/NotFoundPage';
+import ProtectedPage from './pages/ProtectedPage';
+import Saved from './pages/Saved';
+import TaskDetailPage from './pages/TaskDetailPage';
+import TasksPage from './pages/TasksPage';
+import UserProfile from './pages/UserProfile';
+import EditPin from './pages/EditPin'
 
 // App does two things:
 //   1. maps every URL to a page
@@ -147,9 +148,16 @@ function App() {
 
         {/* Public on purpose: you can reach these while logged OUT.
             They get setUser so they can report a successful login back up. */}
-        <Route path="/explore" element={<Explore />} />
-        <Route path="/create-pin" element={<CreatePin />} />
-        <Route path="/saved" element={<Saved user={user} />} />
+        <Route path='/explore' element={<Explore/>}/>
+        <Route path='/create-pin' element={<CreatePin />} />
+        <Route path='/saved' element={<Saved user={user} />} />
+        {/* <Route path='/pins/:id/edit' element={<EditPin />} /> */}
+        <Route path='/pins/:id/edit' element={
+            <ProtectedRoute user={user} isLoading={isLoading}>
+              <EditPin user={user} />
+            </ProtectedRoute>
+          }
+        />
         <Route
           path="/login"
           element={<Auth key="login" initialMode="login" setUser={setUser} />}

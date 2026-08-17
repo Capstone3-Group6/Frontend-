@@ -83,3 +83,16 @@ export async function getMyPins(token) {
 
   return response.json();
 }
+
+
+export async function deletePin(id) {
+  const response = await fetch(`${BASE_URL}/pins/${id}`, {
+    method: "DELETE",    
+    credentials: "include",
+  })
+  if (!response.ok) {
+    throw new Error("Could not delete your mood pins");
+  }
+
+  return response.json();
+}

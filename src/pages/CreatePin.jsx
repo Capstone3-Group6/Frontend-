@@ -55,6 +55,13 @@ export default function CreatePin() {
 
   async function handleCreatePin(formData) {
     try {
+      const newPin = await createPin({
+        locationName: formData.locationName,
+        mood: formData.mood,
+        description: formData.description || formData.notes || "New Mood Pin",
+        latitude: selectedLocation.latitude,
+        longitude: selectedLocation.longitude,
+      });
       // Make sure Auth0 has finished loading
       if (isAuth0Loading) {
         throw new Error("Authentication is still loading. Please try again.");
@@ -126,7 +133,7 @@ export default function CreatePin() {
     <section className="mx-auto w-full max-w-[1500px] px-4 py-6 sm:px-6">
       <CreatePinPanel
         location={selectedLocation}
-        onCreate={handleCreatePin}
+        onSubmit={handleCreatePin}
         onCancel={handleCancelPin}
       />
     </section>

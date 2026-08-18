@@ -1,7 +1,7 @@
 // Added by Musaddik
-// PlaceCard.jsx — Displays basic information, Moodie AI reasoning, and interactive AI follow-up details
+// PlaceCard.jsx — Displays basic information, Moodie AI reasoning, and interactive AI follow-up details with draggable support on the map
 
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { askAboutPlace } from '../api/recommendations';
 
 const PREDEFINED_QUESTIONS = [
@@ -19,6 +19,20 @@ export default function PlaceCard({ place, onClose }) {
   const [isAsking, setIsAsking] = useState(false);
   const [errorMsg, setErrorMsg] = useState('');
 
+  // ── Drag & Drop State ──
+  const [position, setPosition] = useState({ x: 0, y: 0 });
+  const [isDragging, setIsDragging] = useState(false);
+  const dragRef = useRef({ startX: 0, startY: 0, initialX: 0, initialY: 0 });
+
+  // Reset position when selected place changes
+  useEffect(() => {
+    setPosition({ x: 0, y: 0 });
+    setAnswer('');
+    setActiveQuestion('');
+    setCustomQuestion('');
+    setErrorMsg('');
+  }, [place?.id]);
+
   if (!place) return null;
 
   const name = place.displayName?.text || place.name || 'Unknown Place';
@@ -26,6 +40,43 @@ export default function PlaceCard({ place, onClose }) {
   const reason = place.reason || (place.matchedKeyword
     ? `Matches your "${place.mood || 'selected'}" mood by bringing "${place.matchedKeyword}" vibes to your day.`
     : `Curated by Moodie to match your "${place.mood || 'current'}" mood perfectly.`);
+
+  // ── Drag Event Handlers ──
+  const handlePointerDown = (e) => {
+    if (e.button !== 0) return; // Only primary mouse click
+    e.stopPropagation();
+    try {
+      e.currentTarget.setPointerCapture(e.pointerId);
+    } catch {}
+    setIsDragging(true);
+    dragRef.current = {
+      startX: e.clientX,
+      startY: e.clientY,
+      initialX: position.x,
+      initialY: position.y,
+    };
+  };
+
+  const handlePointerMove = (e) => {
+    if (!isDragging) return;
+    e.stopPropagation();
+    const dx = e.clientX - dragRef.current.startX;
+    const dy = e.clientY - dragRef.current.startY;
+    setPosition({
+      x: dragRef.current.initialX + dx,
+      y: dragRef.current.initialY + dy,
+    });
+  };
+
+  const handlePointerUp = (e) => {
+    if (isDragging) {
+      e.stopPropagation();
+      try {
+        e.currentTarget.releasePointerCapture(e.pointerId);
+      } catch {}
+      setIsDragging(false);
+    }
+  };
 
   const handleAsk = async (questionText) => {
     if (!questionText?.trim() || isAsking) return;
@@ -55,22 +106,70 @@ export default function PlaceCard({ place, onClose }) {
   return (
     <div
       className="card-enter"
+      onMouseDown={(e) => e.stopPropagation()} // Prevent Leaflet map clicks
+      onTouchStart={(e) => e.stopPropagation()}
       style={{
+        transform: `translate3d(${position.x}px, ${position.y}px, 0)${isDragging ? ' scale(1.02)' : ''}`,
+        transition: isDragging ? 'none' : 'transform 0.15s ease-out, box-shadow 0.2s ease',
         background: '#FFFFFF',
         borderRadius: '20px',
-        boxShadow: '0 16px 48px rgba(0,0,0,0.14), 0 2px 8px rgba(0,0,0,0.06)',
+        boxShadow: isDragging
+          ? '0 24px 64px rgba(0,0,0,0.24), 0 8px 24px rgba(0,0,0,0.12)'
+          : '0 16px 48px rgba(0,0,0,0.14), 0 2px 8px rgba(0,0,0,0.06)',
         border: '1px solid #EDE8E0',
         overflow: 'hidden',
         width: '320px',
         maxHeight: 'calc(100vh - 120px)',
         display: 'flex',
         flexDirection: 'column',
+        userSelect: isDragging ? 'none' : 'auto',
       }}
     >
       {/* Decorative colored header accent line */}
       <div style={{ height: '5px', background: 'linear-gradient(90deg, #C4B5FD 0%, #FDBA74 50%, #FCA5A5 100%)', flexShrink: 0 }} />
 
-      <div style={{ padding: '16px 16px 14px', overflowY: 'auto', flex: 1 }}>
+      {/* ── Draggable Header Handle Bar ── */}
+      <div
+        onPointerDown={handlePointerDown}
+        onPointerMove={handlePointerMove}
+        onPointerUp={handlePointerUp}
+        onPointerCancel={handlePointerUp}
+        style={{
+          padding: '8px 12px 2px',
+          cursor: isDragging ? 'grabbing' : 'grab',
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          background: isDragging ? '#FDFBF9' : '#FFFFFF',
+          borderBottom: '1px solid #F5F1EA',
+          touchAction: 'none',
+        }}
+        title="Click and drag to move card around the map"
+      >
+        <div
+          style={{
+            width: '38px',
+            height: '4px',
+            background: isDragging ? '#A78BFA' : '#D9D4CE',
+            borderRadius: '999px',
+            marginBottom: '3px',
+            transition: 'background 0.2s',
+          }}
+        />
+        <span
+          style={{
+            fontSize: '9.5px',
+            fontWeight: 700,
+            color: isDragging ? '#7C3AED' : '#A89F91',
+            letterSpacing: '0.3px',
+            textTransform: 'uppercase',
+          }}
+        >
+          {isDragging ? 'Moving Place Card...' : '✥ Drag to reposition'}
+        </span>
+      </div>
+
+      <div style={{ padding: '12px 16px 14px', overflowY: 'auto', flex: 1 }}>
         {/* Header Title and Close Button */}
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '8px' }}>
           <h3 style={{ fontSize: '15px', fontWeight: 700, color: '#3D2C1E', margin: 0, lineHeight: 1.3, flex: 1, paddingRight: '10px' }}>

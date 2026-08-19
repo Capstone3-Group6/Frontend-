@@ -292,9 +292,15 @@ export default function MoodMap({
                           </span>
                         </div>
 
-                        <button className="shrink-0 rounded-lg bg-[#B4232C] px-3 py-2 text-xs font-semibold text-white transition hover:scale-105 hover:bg-[#7D1820]">
-                          Details
-                        </button>
+                        <a
+                          href={`https://www.google.com/maps/search/?api=1&query=${pin.latitude},${pin.longitude}`}
+                          target="_blank"
+                          rel="noreferrer"
+                          className="inline-block shrink-0 rounded-lg bg-[#B4232C] px-3 py-2 text-center text-xs font-semibold text-white no-underline transition hover:scale-105 hover:bg-[#7D1820]"
+                          style={{ color: '#FFFFFF', textDecoration: 'none' }}
+                        >
+                          View on Maps ↗
+                        </a>
                       </div>
                     </div>
                   </div>

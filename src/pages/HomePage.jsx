@@ -3,7 +3,7 @@ import { useLocation, useNavigate } from "react-router";
 import { useAuth0 } from "@auth0/auth0-react";
 
 import MoodMap from "../components/MoodMap";
-import { getPins } from "../api/pins";
+import { getPins, savePin, unsavePin } from "../api/pins";
 
 import { getRecommendations } from "../api/recommendations";
 import MoodieButton from "../components/MoodieButton";
@@ -11,6 +11,48 @@ import MoodInputModal from "../components/MoodInputModal";
 import PlaceCard from "../components/PlaceCard";
 
 const DEFAULT_CENTER = [40.7128, -74.006];
+const radiusOptions = [1, 5, 10, 25, 50, 100];
+
+function distanceInMiles(from, to) {
+  if (!from || !to) {
+    return null;
+  }
+
+  const [lat1, lon1] = from.map(Number);
+  const [lat2, lon2] = to.map(Number);
+
+  if (
+    !Number.isFinite(lat1) ||
+    !Number.isFinite(lon1) ||
+    !Number.isFinite(lat2) ||
+    !Number.isFinite(lon2)
+  ) {
+    return null;
+  }
+
+  const earthRadiusMiles = 3958.8;
+  const toRadians = (degrees) => (degrees * Math.PI) / 180;
+  const dLat = toRadians(lat2 - lat1);
+  const dLon = toRadians(lon2 - lon1);
+
+  const a =
+    Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+    Math.cos(toRadians(lat1)) *
+      Math.cos(toRadians(lat2)) *
+      Math.sin(dLon / 2) *
+      Math.sin(dLon / 2);
+
+  return earthRadiusMiles * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+}
+
+function zoomForRadius(radiusMiles) {
+  if (radiusMiles <= 1) return 14;
+  if (radiusMiles <= 5) return 12;
+  if (radiusMiles <= 10) return 11;
+  if (radiusMiles <= 25) return 10;
+  if (radiusMiles <= 50) return 9;
+  return 8;
+}
 
 const moods = [
   {
@@ -102,7 +144,7 @@ function SaveIcon() {
 
 function MoodFilterBar({ selectedMood, onSelectMood }) {
   return (
-    <div className="min-w-0 overflow-x-auto pb-1">
+    <div className="mood-filter-control min-w-0 overflow-x-auto pb-1">
       <div className="flex min-w-max items-center gap-2 md:w-full md:min-w-0 md:justify-between">
         <button
           type="button"
@@ -153,7 +195,7 @@ function MoodFilterBar({ selectedMood, onSelectMood }) {
   );
 }
 
-function NearbyPlaceCard({ place }) {
+function NearbyPlaceCard({ place, onToggleSaved, onSelectPlace }) {
   const moodName = place.mood || "Calm";
 
   const mood =
@@ -164,7 +206,18 @@ function NearbyPlaceCard({ place }) {
     ) || moods[0];
 
   return (
-    <article className="group flex gap-3 rounded-3xl p-2.5 transition duration-200 hover:-translate-y-1 hover:bg-[#F7F3EE] hover:shadow-[0_14px_30px_rgba(22,22,22,0.09)]">
+    <article
+      role="button"
+      tabIndex={0}
+      onClick={() => onSelectPlace(place)}
+      onKeyDown={(event) => {
+        if (event.key === "Enter" || event.key === " ") {
+          event.preventDefault();
+          onSelectPlace(place);
+        }
+      }}
+      className="group flex cursor-pointer gap-3 rounded-3xl p-2.5 transition duration-200 hover:-translate-y-1 hover:bg-[#F7F3EE] hover:shadow-[0_14px_30px_rgba(22,22,22,0.09)] focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-[rgba(180,35,44,0.16)]"
+    >
       <div className="flex h-[82px] w-[96px] shrink-0 items-center justify-center overflow-hidden rounded-2xl bg-[#F7F3EE] ring-1 ring-black/5">
         {place.image ? (
           <img
@@ -187,10 +240,14 @@ function NearbyPlaceCard({ place }) {
 
           <button
             type="button"
+            onClick={(event) => {
+              event.stopPropagation();
+              onToggleSaved(place);
+            }}
             className="cursor-pointer text-[#6F6A66] transition duration-200 hover:-translate-y-0.5 hover:scale-110 hover:text-[#B4232C]"
-            aria-label={`Save ${place.locationName}`}
+            aria-label={`${place.isSaved ? "Remove saved" : "Save"} ${place.locationName}`}
           >
-            <SaveIcon />
+            {place.isSaved ? "♥" : <SaveIcon />}
           </button>
         </div>
 
@@ -239,9 +296,13 @@ function MapPanel({
   aiPins,
   onSelectPlace,
   mapCenter,
+  mapZoom,
+  userLocation,
+  radiusMiles,
+  onToggleSaved,
 }) {
   return (
-    <div className="relative min-h-[440px] overflow-hidden rounded-[28px] border border-[#D9D4CE] bg-[#EDE7DF] shadow-[0_24px_58px_rgba(22,22,22,0.14)] transition duration-300 hover:shadow-[0_28px_66px_rgba(22,22,22,0.17)] sm:min-h-[500px] lg:h-full lg:min-h-[560px]">
+    <div className="map-panel-frame relative min-h-[410px] overflow-hidden rounded-[24px] border border-[#D9D4CE] bg-[#EDE7DF] shadow-[0_20px_48px_rgba(22,22,22,0.12)] transition duration-300 hover:shadow-[0_24px_56px_rgba(22,22,22,0.15)] sm:min-h-[470px] lg:h-full lg:min-h-[520px]">
       <MoodMap
         pins={pins}
         isAddingPin={isAddingPin}
@@ -252,13 +313,17 @@ function MapPanel({
         aiPins={aiPins}
         onSelectPlace={onSelectPlace}
         mapCenter={mapCenter}
+        mapZoom={mapZoom}
+        userLocation={userLocation}
+        radiusMiles={radiusMiles}
+        onToggleSaved={onToggleSaved}
       />
 
       <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(180deg,rgba(247,243,238,0.18),transparent_30%,rgba(22,22,22,0.08))]" />
 
       <div className="absolute left-4 top-4 z-10 rounded-full border border-[#D9D4CE] bg-[#FFFDFC]/92 px-3 py-2 shadow-[0_12px_28px_rgba(22,22,22,0.10)] backdrop-blur">
         <p className="text-xs font-black text-[#161616]">
-          New York City, NY
+          {userLocation ? "Your area" : "New York City, NY"}
         </p>
       </div>
     </div>
@@ -287,9 +352,18 @@ export default function HomePage() {
     useState("All");
 
   const [pins, setPins] = useState([]);
+  const [savingPinId, setSavingPinId] =
+    useState(null);
 
   const [mapCenter, setMapCenter] =
     useState(DEFAULT_CENTER);
+  const [mapZoom, setMapZoom] = useState(13);
+  const [userLocation, setUserLocation] =
+    useState(null);
+  const [radiusMiles, setRadiusMiles] =
+    useState(10);
+  const [focusedPin, setFocusedPin] =
+    useState(routeCreatedPin);
 
   const [recommendations, setRecommendations] =
     useState([]);
@@ -309,6 +383,33 @@ export default function HomePage() {
 
   const [searchQuery, setSearchQuery] =
     useState("");
+
+  useEffect(() => {
+    if (!navigator.geolocation) {
+      return;
+    }
+
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        const nextLocation = [
+          position.coords.latitude,
+          position.coords.longitude,
+        ];
+
+        setUserLocation(nextLocation);
+        setMapCenter(nextLocation);
+        setMapZoom(zoomForRadius(radiusMiles));
+      },
+      () => {
+        setUserLocation(null);
+      },
+      {
+        enableHighAccuracy: true,
+        timeout: 8000,
+        maximumAge: 5 * 60 * 1000,
+      },
+    );
+  }, []);
 
   useEffect(() => {
     async function loadPins() {
@@ -357,7 +458,17 @@ export default function HomePage() {
           searchQuery.toLowerCase()
         );
 
-    return matchesMood && matchesSearch;
+    const distanceFromUser = distanceInMiles(userLocation, [
+      pin.latitude,
+      pin.longitude,
+    ]);
+
+    const matchesRadius =
+      !userLocation ||
+      distanceFromUser === null ||
+      distanceFromUser <= radiusMiles;
+
+    return matchesMood && matchesSearch && matchesRadius;
   });
 
   useEffect(() => {
@@ -378,6 +489,7 @@ export default function HomePage() {
       behavior: "smooth",
       block: "start",
     });
+    setFocusedPin(routeCreatedPin);
   }, [routeCreatedPin]);
 
   function startAddingPin() {
@@ -395,6 +507,63 @@ export default function HomePage() {
     navigate("/create-pin", {
       state: location,
     });
+  }
+
+  function handleSelectNearbyPin(pin) {
+    setFocusedPin(pin);
+    setMapCenter([Number(pin.latitude), Number(pin.longitude)]);
+    setMapZoom(15);
+
+    mapSectionRef.current?.scrollIntoView({
+      behavior: "smooth",
+      block: "start",
+    });
+  }
+
+  function handleRadiusChange(event) {
+    const nextRadius = Number(event.target.value);
+
+    setRadiusMiles(nextRadius);
+    setMapZoom(zoomForRadius(nextRadius));
+
+    if (userLocation) {
+      setMapCenter(userLocation);
+    }
+  }
+
+  async function handleToggleSaved(pin) {
+    if (!pin?.id || savingPinId) {
+      return;
+    }
+
+    setSavingPinId(pin.id);
+
+    try {
+      let token;
+
+      if (isAuthenticated) {
+        token = await getAccessTokenSilently();
+      }
+
+      if (pin.isSaved) {
+        await unsavePin(pin.id, token);
+      } else {
+        await savePin(pin.id, token);
+      }
+
+      setPins((currentPins) =>
+        currentPins.map((currentPin) =>
+          currentPin.id === pin.id
+            ? { ...currentPin, isSaved: !pin.isSaved }
+            : currentPin,
+        ),
+      );
+    } catch (error) {
+      console.error("Could not update saved pin:", error);
+      setError(error.message || "Could not update saved pin.");
+    } finally {
+      setSavingPinId(null);
+    }
   }
 
   const handleFetchRecommendations = async (
@@ -478,9 +647,9 @@ export default function HomePage() {
           </div>
         )}
 
-        <div className="mb-4 rounded-[28px] border border-[rgba(22,22,22,0.07)] bg-white/68 px-4 py-4 shadow-[0_10px_28px_rgba(22,22,22,0.055)] backdrop-blur">
-          <div className="grid items-center gap-3 md:grid-cols-[minmax(300px,500px)_minmax(320px,1fr)]">
-            <label className="group flex h-[52px] min-w-0 items-center rounded-full border border-[rgba(22,22,22,0.08)] bg-[#FFFDFC] px-3 shadow-[0_8px_20px_rgba(22,22,22,0.055)] transition duration-200 focus-within:border-[rgba(180,35,44,0.35)] focus-within:shadow-[0_12px_28px_rgba(180,35,44,0.1)] focus-within:ring-4 focus-within:ring-[rgba(180,35,44,0.10)]">
+        <div className="explore-toolbar mb-4 rounded-[22px] border border-[rgba(22,22,22,0.07)] bg-white/78 px-3 py-3 shadow-[0_10px_28px_rgba(22,22,22,0.055)] backdrop-blur">
+          <div className="grid items-center gap-2 lg:grid-cols-[minmax(240px,400px)_142px_minmax(320px,1fr)]">
+            <label className="explore-search-control group flex h-[46px] min-w-0 items-center rounded-full border border-[rgba(22,22,22,0.08)] bg-[#FFFDFC] px-3 shadow-[0_8px_20px_rgba(22,22,22,0.045)] transition duration-200 focus-within:border-[rgba(180,35,44,0.35)] focus-within:shadow-[0_12px_28px_rgba(180,35,44,0.1)] focus-within:ring-4 focus-within:ring-[rgba(180,35,44,0.10)]">
               <span className="mr-2 flex h-8 w-8 items-center justify-center rounded-full bg-[#F7F3EE] text-[#161616] transition group-focus-within:text-[#B4232C]">
                 <SearchIcon />
               </span>
@@ -496,6 +665,23 @@ export default function HomePage() {
                 placeholder="Find a place"
                 className="min-w-0 flex-1 bg-transparent text-sm font-semibold text-[#161616] outline-none placeholder:text-[#6F6A66]"
               />
+            </label>
+
+            <label className="explore-radius-control flex h-[46px] items-center gap-2 rounded-full border border-[rgba(22,22,22,0.08)] bg-[#FFFDFC] px-3 shadow-[0_8px_20px_rgba(22,22,22,0.045)]">
+              <span className="text-xs font-black uppercase tracking-wider text-[#6F6A66]">
+                Rad.
+              </span>
+              <select
+                value={radiusMiles}
+                onChange={handleRadiusChange}
+                className="min-w-0 flex-1 bg-transparent text-sm font-black text-[#161616] outline-none"
+              >
+                {radiusOptions.map((radius) => (
+                  <option key={radius} value={radius}>
+                    {radius} mi
+                  </option>
+                ))}
+              </select>
             </label>
 
             <MoodFilterBar
@@ -533,11 +719,12 @@ export default function HomePage() {
               </div>
 
               <p className="mt-2 text-xs font-bold text-[#6F6A66]">
-                {visiblePins.length}{" "}
+              {visiblePins.length}{" "}
                 {visiblePins.length === 1
                   ? "pin"
                   : "pins"}{" "}
                 found
+                {userLocation ? ` within ${radiusMiles} mi` : ""}
               </p>
             </div>
 
@@ -547,6 +734,8 @@ export default function HomePage() {
                   <NearbyPlaceCard
                     key={pin.id}
                     place={pin}
+                    onToggleSaved={handleToggleSaved}
+                    onSelectPlace={handleSelectNearbyPin}
                   />
                 ))
               ) : (
@@ -581,12 +770,16 @@ export default function HomePage() {
               refreshKey={
                 routeCreatedPin?.id || 0
               }
-              focusPin={routeCreatedPin}
+              focusPin={focusedPin}
               aiPins={recommendations}
               onSelectPlace={(place) =>
                 setSelectedAIPlace(place)
               }
               mapCenter={mapCenter}
+              mapZoom={mapZoom}
+              userLocation={userLocation}
+              radiusMiles={radiusMiles}
+              onToggleSaved={handleToggleSaved}
             />
 
             {selectedAIPlace &&

@@ -15,7 +15,6 @@ export default function CreatePinPanel({ location, onSubmit, onCancel }) {
   const [mood, setMood] = useState('Calm');
   const [description, setDescription] = useState('');
   const [notes, setNotes] = useState('');
-  const [privacy, setPrivacy] = useState('Public');
   const [photoName, setPhotoName] = useState('');
   const [photoPreview, setPhotoPreview] = useState('');
 
@@ -44,7 +43,6 @@ export default function CreatePinPanel({ location, onSubmit, onCancel }) {
       notes: notes.trim(),
       image: photoPreview,
       photoName,
-      privacy,
     });
   }
 
@@ -176,6 +174,7 @@ export default function CreatePinPanel({ location, onSubmit, onCancel }) {
             </span>
           </label>
 
+          {false && (
           <div>
             <p className="text-sm font-bold text-[#171326]">Privacy</p>
             <div className="mt-3 grid gap-2 sm:grid-cols-2">
@@ -203,6 +202,7 @@ export default function CreatePinPanel({ location, onSubmit, onCancel }) {
               ))}
             </div>
           </div>
+          )}
         </div>
 
         <div className="mt-6 flex flex-col gap-3 sm:flex-row">

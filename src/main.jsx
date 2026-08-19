@@ -1,7 +1,11 @@
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import { BrowserRouter } from 'react-router';
-import { Auth0Provider } from '@auth0/auth0-react';
+import {
+  Auth0Context,
+  Auth0Provider,
+  initialContext,
+} from '@auth0/auth0-react';
 import 'leaflet/dist/leaflet.css'
 
 import './index.css';
@@ -52,13 +56,28 @@ const root = createRoot(document.getElementById('root'));
 // from index.html and tells React:
 // "Render the whole app inside this element."
 
-const missing = [
+const missingAuth0Settings = [
   ['VITE_AUTH0_DOMAIN', authConfig.domain],
   ['VITE_AUTH0_CLIENT_ID', authConfig.clientId],
   ['VITE_AUTH0_AUDIENCE', authConfig.authorizationParams.audience],
 ]
   .filter(([, value]) => !value)
   .map(([name]) => name);
+
+const isAuth0Configured = missingAuth0Settings.length === 0;
+
+const disabledAuth0Context = {
+  ...initialContext,
+  isLoading: false,
+  isAuthenticated: false,
+  loginWithRedirect: async () => {
+    throw new Error(
+      `Auth0 is not configured. Missing: ${missingAuth0Settings.join(', ')}`,
+    );
+  },
+  getAccessTokenSilently: async () => undefined,
+  logout: () => {},
+};
 
 // This checks whether any required Auth0 values are missing.
 //
@@ -70,91 +89,20 @@ const missing = [
 //
 // ['VITE_AUTH0_CLIENT_ID']
 
-if (missing.length > 0) {
-  // If Auth0 configuration is missing,
-  // do NOT try to start Auth0.
-  //
-  // Instead, show a helpful error page.
+const app = (
+  <BrowserRouter>
+    <App />
+  </BrowserRouter>
+);
 
-  root.render(
-    <div className='mx-auto max-w-lg p-8 text-left'>
-      <h1 className='mb-3 text-2xl font-semibold text-[#111827]'>
-        Missing Auth0 settings
-      </h1>
-
-      {/* Shows the main error title. */}
-
-      <p className='mb-4'>
-        This app can't start until these are set in a{' '}
-        <code>.env</code> file at the project root:
-      </p>
-
-      {/* Explains where the missing values should be added. */}
-
-      <ul className='mb-4 list-disc pl-6'>
-        {missing.map((name) => (
-          <li key={name}>
-            <code>{name}</code>
-          </li>
-        ))}
-      </ul>
-
-      {/* 
-        `.map()` creates one list item
-        for every missing environment variable.
-      */}
-
-      <p>
-        Fill in the Auth0 values in <code>.env</code>, then restart{' '}
-        <code>npm run dev</code>.
-      </p>
-    </div>,
-  );
-} else {
-  // If all required Auth0 values exist,
-  // start the real Mood Map application.
-
-  root.render(
-    <StrictMode>
-      {/*
-        StrictMode helps React detect possible problems
-        while we are developing.
-      */}
-
-      <Auth0Provider {...authConfig}>
-        {/*
-          Auth0Provider gives the entire React application
-          access to Auth0 login information.
-
-          That is why App.jsx can use:
-
-          useAuth0()
-        */}
-
-        <BrowserRouter>
-          {/*
-            BrowserRouter enables React Router.
-
-            It lets URLs like:
-
-            /
-            /login
-            /signup
-            /saved
-
-            load different React pages without refreshing
-            the whole browser.
-          */}
-
-          <App />
-
-          {/*
-            App.jsx contains our main routes,
-            user state, login flow, logout flow,
-            and all of our pages.
-          */}
-        </BrowserRouter>
-      </Auth0Provider>
-    </StrictMode>,
-  );
-}
+root.render(
+  <StrictMode>
+    {isAuth0Configured ? (
+      <Auth0Provider {...authConfig}>{app}</Auth0Provider>
+    ) : (
+      <Auth0Context.Provider value={disabledAuth0Context}>
+        {app}
+      </Auth0Context.Provider>
+    )}
+  </StrictMode>,
+);

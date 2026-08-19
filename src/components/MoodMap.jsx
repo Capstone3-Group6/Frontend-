@@ -4,6 +4,7 @@ import {
   MapContainer,
   Marker,
   Popup,
+  Circle,
   TileLayer,
   Tooltip,
   useMap,
@@ -97,7 +98,7 @@ function FocusCreatedPin({ pin }) {
 }
 
 // Recenter map when AI recommendations change the center
-function RecenterMap({ center }) {
+function RecenterMap({ center, zoom }) {
   const map = useMap();
 
   useEffect(() => {
@@ -108,11 +109,11 @@ function RecenterMap({ center }) {
       Number.isFinite(Number(center[0])) &&
       Number.isFinite(Number(center[1]))
     ) {
-      map.setView(center, map.getZoom(), {
+      map.setView(center, zoom || map.getZoom(), {
         animate: true,
       });
     }
-  }, [center, map]);
+  }, [center, map, zoom]);
 
   return null;
 }
@@ -134,6 +135,10 @@ export default function MoodMap({
   onAiPlaceSelect,
 
   mapCenter = [40.7128, -74.006],
+  mapZoom = 13,
+  userLocation = null,
+  radiusMiles = 10,
+  onToggleSaved,
 }) {
   const center = mapCenter || [40.7128, -74.006];
 
@@ -149,7 +154,7 @@ export default function MoodMap({
     <div className="relative h-full w-full">
       <MapContainer
         center={center}
-        zoom={13}
+        zoom={mapZoom}
         dragging
         scrollWheelZoom={false}
         doubleClickZoom
@@ -161,7 +166,20 @@ export default function MoodMap({
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
         />
 
-        <RecenterMap center={center} />
+        <RecenterMap center={center} zoom={mapZoom} />
+
+        {userLocation && (
+          <Circle
+            center={userLocation}
+            radius={radiusMiles * 1609.34}
+            pathOptions={{
+              color: "#B4232C",
+              fillColor: "#B4232C",
+              fillOpacity: 0.08,
+              weight: 2,
+            }}
+          />
+        )}
 
         <LocationPicker
           enabled={isAddingPin}
@@ -266,9 +284,12 @@ export default function MoodMap({
                         </div>
 
                         <button
-                          className="flex h-8 w-8 items-center justify-center rounded-full text-[#6F6A66] transition hover:scale-110 hover:bg-[#F7F3EE] hover:text-[#B4232C]"
-                          aria-label="Save place"
+                          type="button"
+                          onClick={() => onToggleSaved?.(pin)}
+                          className="flex h-8 w-8 items-center justify-center rounded-full text-[0px] text-[#6F6A66] transition hover:scale-110 hover:bg-[#F7F3EE] hover:text-[#B4232C]"
+                          aria-label={pin.isSaved ? "Remove saved place" : "Save place"}
                         >
+                          <span className="text-lg">{pin.isSaved ? "♥" : "♡"}</span>
                           ♡
                         </button>
                       </div>

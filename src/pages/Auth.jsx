@@ -122,6 +122,11 @@ export default function Auth({ setUser, initialMode = 'login' }) {
   const navigate = useNavigate();
   const location = useLocation();
   const { loginWithRedirect } = useAuth0();
+  const isAuth0Configured = Boolean(
+    import.meta.env.VITE_AUTH0_DOMAIN &&
+      import.meta.env.VITE_AUTH0_CLIENT_ID &&
+      import.meta.env.VITE_AUTH0_AUDIENCE,
+  );
   const redirectTo = location.state?.from ?? '/explore';
 
   const [authMode, setAuthMode] = useState(initialMode);
@@ -256,6 +261,17 @@ export default function Auth({ setUser, initialMode = 'login' }) {
     }
   }
 
+  async function handleAuth0Login() {
+    if (!isAuth0Configured) {
+      setGeneralError(
+        'Auth0 is not configured yet. Use email and password, or add the Auth0 values to Frontend-/.env.',
+      );
+      return;
+    }
+
+    await loginWithRedirect();
+  }
+
   return (
     <main className="auth-shell">
       <section
@@ -328,7 +344,7 @@ export default function Auth({ setUser, initialMode = 'login' }) {
               type="button"
               className="auth-oauth-btn"
               disabled={isLoading}
-              onClick={() => loginWithRedirect()}
+              onClick={handleAuth0Login}
             >
               <AuthIcon type="auth0" />
               Continue with Auth0
@@ -415,7 +431,7 @@ export default function Auth({ setUser, initialMode = 'login' }) {
               type="button"
               className="auth-oauth-btn"
               disabled={isLoading}
-              onClick={() => loginWithRedirect()}
+              onClick={handleAuth0Login}
             >
               <AuthIcon type="auth0" />
               Continue with Auth0

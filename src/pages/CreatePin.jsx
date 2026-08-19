@@ -72,6 +72,7 @@ export default function CreatePin() {
           description: formData.description || formData.notes || "New Mood Pin",
           latitude: selectedLocation.latitude,
           longitude: selectedLocation.longitude,
+          image: formData.image,
         },
         token,
       );

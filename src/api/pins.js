@@ -96,3 +96,75 @@ export async function deletePin(id) {
 
   return response.json();
 }
+
+// POST /pins/:id/save
+export async function savePin(id, token) {
+  const headers = {
+    "Content-Type": "application/json",
+  };
+
+  if (token) {
+    headers.Authorization = `Bearer ${token}`;
+  }
+
+  const response = await fetch(`${BASE_URL}/pins/${id}/save`, {
+    method: "POST",
+    credentials: "include",
+    headers,
+  });
+
+  if (!response.ok) {
+    const body = await response.json().catch(() => ({}));
+    throw new Error(body.error || `Could not save pin (${response.status})`);
+  }
+
+  return response.json();
+}
+
+// DELETE /pins/:id/save
+export async function unsavePin(id, token) {
+  const headers = {
+    "Content-Type": "application/json",
+  };
+
+  if (token) {
+    headers.Authorization = `Bearer ${token}`;
+  }
+
+  const response = await fetch(`${BASE_URL}/pins/${id}/save`, {
+    method: "DELETE",
+    credentials: "include",
+    headers,
+  });
+
+  if (!response.ok) {
+    const body = await response.json().catch(() => ({}));
+    throw new Error(body.error || `Could not remove saved pin (${response.status})`);
+  }
+
+  return response.json();
+}
+
+// GET /pins/saved
+export async function getSavedPins(token) {
+  const headers = {
+    "Content-Type": "application/json",
+  };
+
+  if (token) {
+    headers.Authorization = `Bearer ${token}`;
+  }
+
+  const response = await fetch(`${BASE_URL}/pins/saved`, {
+    method: "GET",
+    credentials: "include",
+    headers,
+  });
+
+  if (!response.ok) {
+    const body = await response.json().catch(() => ({}));
+    throw new Error(body.error || `Could not load saved pins (${response.status})`);
+  }
+
+  return response.json();
+}

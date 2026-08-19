@@ -173,7 +173,7 @@ function App() {
           path="/profile"
           element={
             <ProtectedRoute user={user} isLoading={isLoading}>
-              <UserProfile user={user} />
+              <UserProfile user={user} setUser={setUser} />
             </ProtectedRoute>
           }
         />

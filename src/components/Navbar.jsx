@@ -141,7 +141,6 @@ export default function Navbar({ user, onLogout }) {
         <div className="flex items-center gap-1.5 sm:gap-3 lg:gap-5">
           <NavItem to="/explore" icon="explore" label="Explore" />
           <NavItem to="/saved" icon="saved" label="Saved" />
-          <NavItem to="/explore" icon="add" label="Add Mood" neverActive />
           {user ? (
             <>
               <NavItem to="/profile" icon="profile" label="Profile" />

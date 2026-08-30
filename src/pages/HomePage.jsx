@@ -42,7 +42,11 @@ function distanceInMiles(from, to) {
       Math.sin(dLon / 2) *
       Math.sin(dLon / 2);
 
-  return earthRadiusMiles * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+  return (
+    earthRadiusMiles *
+    2 *
+    Math.atan2(Math.sqrt(a), Math.sqrt(1 - a))
+  );
 }
 
 function zoomForRadius(radiusMiles) {
@@ -195,7 +199,11 @@ function MoodFilterBar({ selectedMood, onSelectMood }) {
   );
 }
 
-function NearbyPlaceCard({ place, onToggleSaved, onSelectPlace }) {
+function NearbyPlaceCard({
+  place,
+  onToggleSaved,
+  onSelectPlace,
+}) {
   const moodName = place.mood || "Calm";
 
   const mood =
@@ -211,7 +219,10 @@ function NearbyPlaceCard({ place, onToggleSaved, onSelectPlace }) {
       tabIndex={0}
       onClick={() => onSelectPlace(place)}
       onKeyDown={(event) => {
-        if (event.key === "Enter" || event.key === " ") {
+        if (
+          event.key === "Enter" ||
+          event.key === " "
+        ) {
           event.preventDefault();
           onSelectPlace(place);
         }
@@ -245,9 +256,17 @@ function NearbyPlaceCard({ place, onToggleSaved, onSelectPlace }) {
               onToggleSaved(place);
             }}
             className="cursor-pointer text-[#6F6A66] transition duration-200 hover:-translate-y-0.5 hover:scale-110 hover:text-[#B4232C]"
-            aria-label={`${place.isSaved ? "Remove saved" : "Save"} ${place.locationName}`}
+            aria-label={`${
+              place.isSaved
+                ? "Remove saved"
+                : "Save"
+            } ${place.locationName}`}
           >
-            {place.isSaved ? "♥" : <SaveIcon />}
+            {place.isSaved ? (
+              "♥"
+            ) : (
+              <SaveIcon />
+            )}
           </button>
         </div>
 
@@ -302,7 +321,7 @@ function MapPanel({
   onToggleSaved,
 }) {
   return (
-    <div className="map-panel-frame relative min-h-[410px] overflow-hidden rounded-[24px] border border-[#D9D4CE] bg-[#EDE7DF] shadow-[0_20px_48px_rgba(22,22,22,0.12)] transition duration-300 hover:shadow-[0_24px_56px_rgba(22,22,22,0.15)] sm:min-h-[470px] lg:h-full lg:min-h-[520px]">
+    <div className="map-panel-frame relative h-[500px] min-h-[500px] w-full overflow-hidden rounded-[24px] border border-[#D9D4CE] bg-[#EDE7DF] shadow-[0_20px_48px_rgba(22,22,22,0.12)] transition duration-300 hover:shadow-[0_24px_56px_rgba(22,22,22,0.15)] sm:h-[550px] sm:min-h-[550px] lg:h-full lg:min-h-[520px]">
       <MoodMap
         pins={pins}
         isAddingPin={isAddingPin}
@@ -323,7 +342,9 @@ function MapPanel({
 
       <div className="absolute left-4 top-4 z-10 rounded-full border border-[#D9D4CE] bg-[#FFFDFC]/92 px-3 py-2 shadow-[0_12px_28px_rgba(22,22,22,0.10)] backdrop-blur">
         <p className="text-xs font-black text-[#161616]">
-          {userLocation ? "Your area" : "New York City, NY"}
+          {userLocation
+            ? "Your area"
+            : "New York City, NY"}
         </p>
       </div>
     </div>
@@ -357,11 +378,15 @@ export default function HomePage() {
 
   const [mapCenter, setMapCenter] =
     useState(DEFAULT_CENTER);
+
   const [mapZoom, setMapZoom] = useState(13);
+
   const [userLocation, setUserLocation] =
     useState(null);
+
   const [radiusMiles, setRadiusMiles] =
     useState(10);
+
   const [focusedPin, setFocusedPin] =
     useState(routeCreatedPin);
 
@@ -398,7 +423,9 @@ export default function HomePage() {
 
         setUserLocation(nextLocation);
         setMapCenter(nextLocation);
-        setMapZoom(zoomForRadius(radiusMiles));
+        setMapZoom(
+          zoomForRadius(radiusMiles)
+        );
       },
       () => {
         setUserLocation(null);
@@ -407,7 +434,7 @@ export default function HomePage() {
         enableHighAccuracy: true,
         timeout: 8000,
         maximumAge: 5 * 60 * 1000,
-      },
+      }
     );
   }, []);
 
@@ -421,12 +448,15 @@ export default function HomePage() {
         let token;
 
         if (isAuthenticated) {
-          token = await getAccessTokenSilently();
+          token =
+            await getAccessTokenSilently();
         }
 
         const data = await getPins(token);
 
-        setPins(Array.isArray(data) ? data : []);
+        setPins(
+          Array.isArray(data) ? data : []
+        );
       } catch (error) {
         console.error(
           "Could not load pins:",
@@ -458,17 +488,22 @@ export default function HomePage() {
           searchQuery.toLowerCase()
         );
 
-    const distanceFromUser = distanceInMiles(userLocation, [
-      pin.latitude,
-      pin.longitude,
-    ]);
+    const distanceFromUser =
+      distanceInMiles(userLocation, [
+        pin.latitude,
+        pin.longitude,
+      ]);
 
     const matchesRadius =
       !userLocation ||
       distanceFromUser === null ||
       distanceFromUser <= radiusMiles;
 
-    return matchesMood && matchesSearch && matchesRadius;
+    return (
+      matchesMood &&
+      matchesSearch &&
+      matchesRadius
+    );
   });
 
   useEffect(() => {
@@ -489,6 +524,7 @@ export default function HomePage() {
       behavior: "smooth",
       block: "start",
     });
+
     setFocusedPin(routeCreatedPin);
   }, [routeCreatedPin]);
 
@@ -511,7 +547,12 @@ export default function HomePage() {
 
   function handleSelectNearbyPin(pin) {
     setFocusedPin(pin);
-    setMapCenter([Number(pin.latitude), Number(pin.longitude)]);
+
+    setMapCenter([
+      Number(pin.latitude),
+      Number(pin.longitude),
+    ]);
+
     setMapZoom(15);
 
     mapSectionRef.current?.scrollIntoView({
@@ -521,10 +562,14 @@ export default function HomePage() {
   }
 
   function handleRadiusChange(event) {
-    const nextRadius = Number(event.target.value);
+    const nextRadius = Number(
+      event.target.value
+    );
 
     setRadiusMiles(nextRadius);
-    setMapZoom(zoomForRadius(nextRadius));
+    setMapZoom(
+      zoomForRadius(nextRadius)
+    );
 
     if (userLocation) {
       setMapCenter(userLocation);
@@ -542,80 +587,104 @@ export default function HomePage() {
       let token;
 
       if (isAuthenticated) {
-        token = await getAccessTokenSilently();
+        token =
+          await getAccessTokenSilently();
       }
 
       if (pin.isSaved) {
-        await unsavePin(pin.id, token);
+        await unsavePin(
+          pin.id,
+          token
+        );
       } else {
-        await savePin(pin.id, token);
+        await savePin(
+          pin.id,
+          token
+        );
       }
 
       setPins((currentPins) =>
-        currentPins.map((currentPin) =>
-          currentPin.id === pin.id
-            ? { ...currentPin, isSaved: !pin.isSaved }
-            : currentPin,
-        ),
+        currentPins.map(
+          (currentPin) =>
+            currentPin.id === pin.id
+              ? {
+                  ...currentPin,
+                  isSaved:
+                    !pin.isSaved,
+                }
+              : currentPin
+        )
       );
     } catch (error) {
-      console.error("Could not update saved pin:", error);
-      setError(error.message || "Could not update saved pin.");
+      console.error(
+        "Could not update saved pin:",
+        error
+      );
+
+      setError(
+        error.message ||
+          "Could not update saved pin."
+      );
     } finally {
       setSavingPinId(null);
     }
   }
 
-  const handleFetchRecommendations = async (
-    moodQuery
-  ) => {
-    if (!moodQuery?.trim()) {
-      return;
-    }
+  const handleFetchRecommendations =
+    async (moodQuery) => {
+      if (!moodQuery?.trim()) {
+        return;
+      }
 
-    setIsLoading(true);
-    setError(null);
-    setSelectedAIPlace(null);
+      setIsLoading(true);
+      setError(null);
+      setSelectedAIPlace(null);
 
-    try {
-      const data = await getRecommendations(
-        moodQuery,
-        mapCenter[0],
-        mapCenter[1]
-      );
+      try {
+        const data =
+          await getRecommendations(
+            moodQuery,
+            mapCenter[0],
+            mapCenter[1]
+          );
 
-      const recsWithMood =
-        (data.recommendations || []).map(
-          (place) => ({
+        const recsWithMood =
+          (
+            data.recommendations || []
+          ).map((place) => ({
             ...place,
             mood: moodQuery,
-          })
+          }));
+
+        setRecommendations(
+          recsWithMood
         );
 
-      setRecommendations(recsWithMood);
+        setKeywords(
+          data.keywords || []
+        );
 
-      setKeywords(data.keywords || []);
+        const first =
+          recsWithMood[0];
 
-      const first = recsWithMood[0];
-
-      if (
-        first?.location?.latitude &&
-        first?.location?.longitude
-      ) {
-        setMapCenter([
-          first.location.latitude,
-          first.location.longitude,
-        ]);
+        if (
+          first?.location?.latitude &&
+          first?.location?.longitude
+        ) {
+          setMapCenter([
+            first.location.latitude,
+            first.location.longitude,
+          ]);
+        }
+      } catch (err) {
+        setError(
+          err.message ||
+            "Failed to fetch recommendations."
+        );
+      } finally {
+        setIsLoading(false);
       }
-    } catch (err) {
-      setError(
-        err.message ||
-          "Failed to fetch recommendations."
-      );
-    } finally {
-      setIsLoading(false);
-    }
-  };
+    };
 
   return (
     <main className="relative w-full">
@@ -671,22 +740,34 @@ export default function HomePage() {
               <span className="text-xs font-black uppercase tracking-wider text-[#6F6A66]">
                 Rad.
               </span>
+
               <select
                 value={radiusMiles}
-                onChange={handleRadiusChange}
+                onChange={
+                  handleRadiusChange
+                }
                 className="min-w-0 flex-1 bg-transparent text-sm font-black text-[#161616] outline-none"
               >
-                {radiusOptions.map((radius) => (
-                  <option key={radius} value={radius}>
-                    {radius} mi
-                  </option>
-                ))}
+                {radiusOptions.map(
+                  (radius) => (
+                    <option
+                      key={radius}
+                      value={radius}
+                    >
+                      {radius} mi
+                    </option>
+                  )
+                )}
               </select>
             </label>
 
             <MoodFilterBar
-              selectedMood={selectedMood}
-              onSelectMood={setSelectedMood}
+              selectedMood={
+                selectedMood
+              }
+              onSelectMood={
+                setSelectedMood
+              }
             />
           </div>
         </div>
@@ -705,11 +786,14 @@ export default function HomePage() {
                   </p>
                 </div>
 
-                {selectedMood !== "All" && (
+                {selectedMood !==
+                  "All" && (
                   <button
                     type="button"
                     onClick={() =>
-                      setSelectedMood("All")
+                      setSelectedMood(
+                        "All"
+                      )
                     }
                     className="rounded-full bg-[#F7F3EE] px-3 py-1.5 text-xs font-black text-[#B4232C]"
                   >
@@ -719,25 +803,34 @@ export default function HomePage() {
               </div>
 
               <p className="mt-2 text-xs font-bold text-[#6F6A66]">
-              {visiblePins.length}{" "}
+                {visiblePins.length}{" "}
                 {visiblePins.length === 1
                   ? "pin"
                   : "pins"}{" "}
                 found
-                {userLocation ? ` within ${radiusMiles} mi` : ""}
+                {userLocation
+                  ? ` within ${radiusMiles} mi`
+                  : ""}
               </p>
             </div>
 
             <div className="min-h-0 flex-1 space-y-1 overflow-y-auto pr-1">
-              {visiblePins.length > 0 ? (
-                visiblePins.map((pin) => (
-                  <NearbyPlaceCard
-                    key={pin.id}
-                    place={pin}
-                    onToggleSaved={handleToggleSaved}
-                    onSelectPlace={handleSelectNearbyPin}
-                  />
-                ))
+              {visiblePins.length >
+              0 ? (
+                visiblePins.map(
+                  (pin) => (
+                    <NearbyPlaceCard
+                      key={pin.id}
+                      place={pin}
+                      onToggleSaved={
+                        handleToggleSaved
+                      }
+                      onSelectPlace={
+                        handleSelectNearbyPin
+                      }
+                    />
+                  )
+                )
               ) : (
                 <div className="flex min-h-[220px] items-center justify-center px-4 text-center">
                   <div>
@@ -750,8 +843,8 @@ export default function HomePage() {
                     </p>
 
                     <p className="mt-1 text-xs font-semibold text-[#6F6A66]">
-                      Try another mood or clear
-                      the filter.
+                      Try another mood or
+                      clear the filter.
                     </p>
                   </div>
                 </div>
@@ -762,40 +855,68 @@ export default function HomePage() {
           <div className="relative h-full">
             <MapPanel
               pins={visiblePins}
-              isAddingPin={isAddingPin}
-              onStartAddingPin={startAddingPin}
+              isAddingPin={
+                isAddingPin
+              }
+              onStartAddingPin={
+                startAddingPin
+              }
               onLocationSelected={
                 handleLocationSelect
               }
               refreshKey={
-                routeCreatedPin?.id || 0
+                routeCreatedPin?.id ||
+                0
               }
-              focusPin={focusedPin}
-              aiPins={recommendations}
-              onSelectPlace={(place) =>
-                setSelectedAIPlace(place)
+              focusPin={
+                focusedPin
               }
-              mapCenter={mapCenter}
-              mapZoom={mapZoom}
-              userLocation={userLocation}
-              radiusMiles={radiusMiles}
-              onToggleSaved={handleToggleSaved}
+              aiPins={
+                recommendations
+              }
+              onSelectPlace={(
+                place
+              ) =>
+                setSelectedAIPlace(
+                  place
+                )
+              }
+              mapCenter={
+                mapCenter
+              }
+              mapZoom={
+                mapZoom
+              }
+              userLocation={
+                userLocation
+              }
+              radiusMiles={
+                radiusMiles
+              }
+              onToggleSaved={
+                handleToggleSaved
+              }
             />
 
             {selectedAIPlace &&
               !isLoading && (
                 <div
                   style={{
-                    position: "absolute",
+                    position:
+                      "absolute",
                     bottom: "20px",
                     left: "20px",
                     zIndex: 1000,
                   }}
                 >
                   <PlaceCard
-                    place={selectedAIPlace}
+                    place={
+                      selectedAIPlace
+                    }
                     onClose={() =>
-                      setSelectedAIPlace(null)
+                      setSelectedAIPlace(
+                        null
+                      )
                     }
                   />
                 </div>
@@ -805,18 +926,27 @@ export default function HomePage() {
       </section>
 
       <MoodieButton
-        onClick={() => setIsMoodieOpen(true)}
+        onClick={() =>
+          setIsMoodieOpen(true)
+        }
       />
 
       <MoodInputModal
-        isOpen={isMoodieOpen}
+        isOpen={
+          isMoodieOpen
+        }
         onClose={() =>
           !isLoading &&
           setIsMoodieOpen(false)
         }
-        onSubmit={handleFetchRecommendations}
-        isLoading={isLoading}
+        onSubmit={
+          handleFetchRecommendations
+        }
+        isLoading={
+          isLoading
+        }
       />
     </main>
   );
 }
+
